@@ -1,4 +1,4 @@
-# 🛡️ Predictive Maintenance & Anomaly Detection Pipeline using Graph Transformer Autoencoder
+# Predictive Maintenance & Anomaly Detection Pipeline using Graph Transformer Autoencoder
 
 An end-to-end **Machine Learning pipeline** for **predictive maintenance** and **anomaly detection** in smart home appliances using a **Graph Transformer Autoencoder (GTAE)**. The system leverages the **REFIT Smart Home Dataset** to learn normal appliance behavior and identify early signs of hardware degradation through graph-based representation learning and reconstruction error analysis.
 
