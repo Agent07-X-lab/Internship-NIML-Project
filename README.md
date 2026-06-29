@@ -34,44 +34,61 @@ This project introduces a **Graph Transformer Autoencoder (GTAE)** that models r
 # 📂 Project Structure
 
 ```text
-├── 1_raw_data/
-│   ├── CLEAN_House1.csv
-│   ├── CLEAN_House2.csv
-│   └── ...
+Predictive-Maintenance-GTAE/
 │
-├── 3_processed_outputs/
-│   ├── Anomaly_Report.json
-│   ├── Master_Summary.csv
-│   ├── Verification_Report.html
-│   ├── House_[ID]_Processed.csv
-│   ├── House_[ID]_Graphs.pt
-│   ├── House_[ID]_GTAE.pth
-│   └── House_[ID]_Anomaly_Detection.png
+├── 1_raw_data/                             # Raw REFIT smart home dataset
+│   ├── CLEAN_House1.csv                    # House 1 appliance power readings
+│   ├── CLEAN_House2.csv                    # House 2 appliance power readings
+│   └── ...                                 # Remaining house datasets
 │
-├── .venv/
-├── .vscode/
+├── 3_processed_outputs/                    # Automatically generated outputs
+│   ├── House_[ID]_Processed.csv            # Cleaned and normalized time-series data
+│   ├── House_[ID]_Graphs.pt                # PyTorch graph datasets
+│   ├── House_[ID]_GTAE.pth                 # Trained Graph Transformer Autoencoder model
+│   ├── House_[ID]_Anomaly_Detection.png    # Reconstruction error visualization
+│   ├── Master_Summary.csv                  # Summary statistics for all houses
+│   ├── Anomaly_Report.json                 # Consolidated anomaly detection results
+│   └── Verification_Report.html            # Data preprocessing verification report
 │
-├── compile_dashboard.py
-├── dashboard_template.html
-├── fault_injector.py
-├── generate_synthetic_refit.py
-├── graph_builder.py
-├── graph_transformer.py
-├── predict.py
-├── refit_processor.py
-├── report_template.html
-├── run_pipeline.py
-├── server.py
-├── test_upload.py
+├── .venv/                                  # Python virtual environment
 │
-├── Logo.png
-├── aegis_logo.png
+├── .vscode/                                # VS Code configuration files
 │
-├── Predictive_Maintenance_Dashboard.html
-└── README.md
+├── run_pipeline.py                         # Preprocesses raw REFIT data, normalizes power values, generates processed datasets, and creates master summaries
+│
+├── refit_processor.py                      # Core preprocessing module for cleaning, filtering, feature engineering, and standardizing appliance data
+│
+├── generate_synthetic_refit.py             # Generates synthetic REFIT-style datasets when raw data is unavailable
+│
+├── graph_builder.py                        # Builds behavioral graphs using sliding windows and Jaccard similarity between appliance states
+│
+├── graph_transformer.py                    # Implements the Graph Transformer Autoencoder (GTAE) architecture in PyTorch
+│
+├── fault_injector.py                       # Simulates appliance failures such as refrigerator drift and motor current spikes for evaluation
+│
+├── train_eval.py                           # Trains GTAE models, evaluates reconstruction errors, performs anomaly detection, and saves trained models
+│
+├── predict.py                              # Performs inference on new CSV files using trained GTAE models
+│
+├── compile_dashboard.py                    # Compiles anomaly reports and metadata into the final interactive HTML dashboard
+│
+├── dashboard_template.html                 # HTML template used to generate the predictive maintenance dashboard
+│
+├── report_template.html                    # HTML template for preprocessing verification reports
+│
+├── server.py                               # Starts a local web server for dashboard visualization and real-time CSV uploads
+│
+├── test_upload.py                          # Tests the server API by sending CSV files through HTTP POST requests
+│
+├── Predictive_Maintenance_Dashboard.html   # Final interactive dashboard for visualization and monitoring
+│
+├── Logo.png                                # Primary project logo
+│
+├── aegis_logo.png                          # Alternate logo asset
+│
+└── README.md                               # Project documentation
 ```
 
----
 
 # 🚀 Pipeline Workflow
 
