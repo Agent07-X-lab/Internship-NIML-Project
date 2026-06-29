@@ -1,0 +1,31 @@
+{
+    "House": 6,
+    "SourceFile": "CLEAN_House6.csv",
+    "TotalRawRows": 3000,
+    "ProcessedRows": 3309,
+    "StartTime": "2014-04-01 00:00:00",
+    "EndTime": "2014-04-01 07:21:04",
+    "SamplingFrequency": "8s",
+    "Mappings": {
+        "Appliance1": "Freezer (Utility Room)",
+        "Appliance2": "Washing Machine",
+        "Appliance3": "Dishwasher",
+        "Appliance4": "MJY Computer",
+        "Appliance5": "Television Site",
+        "Appliance6": "Microwave",
+        "Appliance7": "Kettle",
+        "Appliance8": "Toaster",
+        "Appliance9": "PGM Computer"
+    },
+    "Thresholds": {
+        "Freezer_Utility_Room": 15.0,
+        "Washing_Machine": 20.0,
+        "Dishwasher": 20.0,
+        "MJY_Computer": 10.0,
+        "Television_Site": 10.0,
+        "Microwave": 100.0,
+        "Kettle": 1000.0,
+        "Toaster": 100.0,
+        "PGM_Computer": 10.0
+    }
+}

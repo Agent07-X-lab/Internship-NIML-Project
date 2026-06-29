@@ -1,0 +1,10 @@
+Appliance,Active Percentage (%),Mean Power Active (W),Threshold_W
+Fridge_Freezer,45.6746,119.23,15.0
+Television_Site_Lounge,62.2675,1005.68,10.0
+Microwave,40.5669,628.76,100.0
+Kettle,0.0,0.0,1000.0
+Toaster,6.6726,1075.19,100.0
+Television_Site_Bedroom,5.3735,2153.55,10.0
+Not_Used,16.3271,14.4,10.0
+Not_Used_1,11.3965,37.38,10.0
+Not_Used_2,1.8896,10.08,10.0

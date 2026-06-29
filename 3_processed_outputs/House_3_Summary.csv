@@ -1,0 +1,10 @@
+Appliance,Active Percentage (%),Mean Power Active (W),Threshold_W
+Toaster,50.7918,119.33,100.0
+Fridge_Freezer,53.3911,1007.32,15.0
+Freezer,43.8004,612.79,15.0
+Tumble_Dryer,61.0696,79.39,20.0
+Dishwasher,7.7084,1031.35,20.0
+Washing_Machine,7.0212,2134.67,20.0
+Television,16.343,14.43,10.0
+Microwave,0.0,0.0,100.0
+Kettle,0.0,0.0,1000.0

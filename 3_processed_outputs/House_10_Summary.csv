@@ -1,0 +1,10 @@
+Appliance,Active Percentage (%),Mean Power Active (W),Threshold_W
+Magimix_Blender,48.9031,119.21,10.0
+Freezer,49.8172,890.83,15.0
+Chest_Freezer_In_Garage,36.6849,552.95,15.0
+Fridge_Freezer,62.8275,79.39,15.0
+Washing_Machine,10.7861,1061.07,20.0
+Dishwasher,4.7227,2119.08,20.0
+Television_Site,16.4534,14.4,10.0
+Microwave,0.0,0.0,100.0
+Kenwood_KMix,1.7367,10.04,10.0

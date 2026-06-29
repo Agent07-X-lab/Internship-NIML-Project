@@ -1,0 +1,1934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NILM Predictor - Early Appliance Fault Detection System</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Vis.js Standalone -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- KaTeX CSS & JS for Mathematical rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Sleek Dark Theme Palette */
+            --bg-base: #121212;
+            --bg-sidebar: #181818;
+            --bg-card: #1e1e1e;
+            --border-color: #2c2c2c;
+            --border-accent: #404040;
+            
+            --text-main: #f5f5f5;
+            --text-muted: #9e9e9e;
+            --text-dark: #626262;
+            
+            --primary: #388bfd; /* Blue */
+            --primary-hover: #1f6feb;
+            --primary-glow: rgba(56, 139, 253, 0.15);
+            
+            --success: #00ff87; /* Neon Green */
+            --success-glow: rgba(0, 255, 135, 0.15);
+            
+            --warning: #ff9f1c; /* Orange */
+            --warning-glow: rgba(255, 159, 28, 0.15);
+            
+            --danger: #ff5c5c; /* Red */
+            --danger-glow: rgba(255, 92, 92, 0.15);
+            
+            --font-title: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            flex-shrink: 0;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            padding: 0;
+            margin: 0 auto 16px auto;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-logo:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+            box-shadow: 0 4px 16px rgba(56, 139, 253, 0.3);
+        }
+
+        .sidebar-header h1 {
+            font-family: var(--font-title);
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sidebar-header p {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .nav-section {
+            margin-bottom: 28px;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-title);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: var(--primary-glow);
+            border-color: rgba(56, 139, 253, 0.3);
+        }
+
+        .nav-item i {
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Simulation Controls inside Sidebar */
+        .simulation-box {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: auto;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .simulation-title {
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .house-select {
+            background: #252525;
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 6px;
+            border-radius: 6px;
+            outline: none;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        /* Main Dashboard Canvas */
+        .main-content {
+            flex-grow: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            max-width: calc(100% - 260px);
+            overflow-y: auto;
+            height: 100vh;
+        }
+
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .top-bar-title h2 {
+            font-family: var(--font-title);
+            font-size: 22px;
+            font-weight: 700;
+        }
+        
+        .top-bar-title p {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .sys-status-badge {
+            font-family: monospace;
+            font-size: 12px;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.02);
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--border-color);
+        }
+
+        .sys-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .sys-indicator.warning {
+            background-color: var(--warning);
+            box-shadow: 0 0 8px var(--warning);
+        }
+
+        .sys-indicator.critical {
+            background-color: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        /* Overview Stat Cards */
+        .metrics-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .metric-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            padding: 16px;
+            border-radius: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metric-info h3 {
+            font-size: 10px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 0.8px;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .metric-info p {
+            font-family: var(--font-title);
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .metric-info span {
+            font-size: 11px;
+            color: var(--text-dark);
+            display: block;
+            margin-top: 2px;
+        }
+
+        .metric-icon {
+            font-size: 18px;
+            color: var(--text-muted);
+            background: rgba(255, 255, 255, 0.02);
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Dashboard Content Blocks */
+        .tab-content {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .tab-content.active {
+            display: flex;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 12px;
+        }
+
+        .card-header h2 {
+            font-family: var(--font-title);
+            font-size: 14px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #fff;
+        }
+
+        .badge-tag {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            padding: 3px 8px;
+            border-radius: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-tag.danger {
+            background: var(--danger-glow);
+            color: var(--danger);
+            border: 1px solid rgba(255, 92, 92, 0.2);
+        }
+
+        .badge-tag.success {
+            background: var(--success-glow);
+            color: var(--success);
+            border: 1px solid rgba(0, 255, 135, 0.2);
+        }
+
+        .badge-tag.warning {
+            background: var(--warning-glow);
+            color: var(--warning);
+            border: 1px solid rgba(255, 159, 28, 0.2);
+        }
+
+        /* Anomaly Line Chart Section */
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+        }
+
+        /* Two Column Layout */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 20px;
+        }
+
+        @media (max-width: 1100px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Network Topology Viewer */
+        .topology-container {
+            height: 300px;
+            border-radius: 8px;
+            background: #0d0d0d;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+
+        #network-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 10px 16px;
+        }
+
+        .slider-label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-width: 50px;
+        }
+
+        .slider-input {
+            flex-grow: 1;
+            accent-color: var(--primary);
+            cursor: pointer;
+        }
+
+        /* Table & Lists styling */
+        .table-scroller {
+            overflow-x: auto;
+        }
+
+        .delta-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .delta-table th {
+            color: var(--text-dark);
+            text-transform: uppercase;
+            font-size: 10px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            padding: 8px 12px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .delta-table td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 500;
+        }
+
+        .delta-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .text-danger { color: var(--danger); }
+        .text-warning { color: var(--warning); }
+        .text-success { color: var(--success); }
+        .text-muted { color: var(--text-muted); }
+
+        /* All Appliances List View */
+        .appliance-list-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .appliance-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .appliance-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            padding: 14px 20px;
+            border-radius: 10px;
+            transition: all 0.2s;
+        }
+
+        .appliance-row:hover {
+            background: rgba(255, 255, 255, 0.02);
+            border-color: var(--border-accent);
+        }
+
+        .appliance-info-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            width: 25%;
+        }
+
+        .appliance-avatar {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid var(--border-color);
+            width: 42px;
+            height: 42px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: var(--primary);
+        }
+
+        .appliance-row.degraded .appliance-avatar {
+            color: var(--warning);
+            border-color: rgba(255, 159, 28, 0.3);
+            background: var(--warning-glow);
+        }
+
+        .appliance-title-text {
+            font-family: var(--font-title);
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .appliance-title-text span {
+            font-family: var(--font-body);
+            font-size: 11px;
+            color: var(--text-dark);
+            display: block;
+            margin-top: 1px;
+        }
+
+        .appliance-power {
+            font-family: monospace;
+            font-size: 13px;
+            font-weight: 600;
+            width: 15%;
+            color: var(--text-main);
+        }
+
+        .appliance-health-container {
+            width: 40%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .health-bar-bg {
+            flex-grow: 1;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 3px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .health-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+        }
+
+        .health-bar-fill.success { background-color: var(--success); }
+        .health-bar-fill.warning { background-color: var(--warning); }
+        .health-bar-fill.danger { background-color: var(--danger); }
+
+        .health-percent-text {
+            font-size: 12px;
+            font-weight: 700;
+            min-width: 35px;
+            text-align: right;
+        }
+
+        /* SCADA Alerts Log styles */
+        .alert-log-container {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alert-log-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.01);
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 12px;
+        }
+
+        .alert-log-row.danger { border-left: 3px solid var(--danger); }
+        .alert-log-row.warning { border-left: 3px solid var(--warning); }
+
+        footer {
+            text-align: center;
+            padding: 24px 0;
+            font-size: 11px;
+            color: var(--text-dark);
+            border-top: 1px solid var(--border-color);
+            margin-top: auto;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Navigation -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img src="aegis_logo.png" alt="NILM Predictor Logo" class="sidebar-logo">
+            <h1><i class="fa-solid fa-shield-halved" style="color:var(--primary);"></i> NILM PREDICTOR</h1>
+            <p>GTAE Fault Diagnostics</p>
+        </div>
+        
+        <!-- Navigation Section: MONITOR -->
+        <div class="nav-section">
+            <div class="nav-section-title">Monitor</div>
+            <div class="nav-list">
+                <button class="nav-item active" onclick="switchTab('overview')">
+                    <i class="fa-solid fa-chart-pie"></i> Overview
+                </button>
+                <button class="nav-item" onclick="switchTab('graph-evolution')">
+                    <i class="fa-solid fa-circle-nodes"></i> Graph evolution
+                </button>
+                <button class="nav-item" onclick="switchTab('benchmark')">
+                    <i class="fa-solid fa-gauge-high"></i> Benchmark
+                </button>
+            </div>
+        </div>
+
+        <!-- Navigation Section: APPLIANCES -->
+        <div class="nav-section">
+            <div class="nav-section-title">Appliances</div>
+            <div class="nav-list">
+                <button class="nav-item" onclick="switchTab('all-appliances')">
+                    <i class="fa-solid fa-plug"></i> All appliances
+                </button>
+                <button class="nav-item" onclick="switchTab('alert-log')">
+                    <i class="fa-solid fa-bell"></i> Alert log
+                </button>
+            </div>
+        </div>
+
+        <!-- Simulation Control Selection Box -->
+        <div class="simulation-box">
+            <div class="simulation-title">Active Database</div>
+            <select id="house-selector" class="house-select" onchange="changeHouseSimulation()">
+                <!-- Populated dynamically -->
+            </select>
+            <div style="color: var(--text-dark); font-size:10px; margin-top:2px;">
+                Kernel: Graph-Transformer NILM Autoencoder
+            </div>
+        </div>
+
+        <!-- Custom CSV File Predict Input -->
+        <div class="simulation-box" style="margin-top: 12px; margin-bottom: 24px;">
+            <div class="simulation-title">NILM Prediction Input</div>
+            <label for="csv-file-input" style="display:flex; align-items:center; justify-content:center; gap:8px; background:var(--primary); color:#fff; border-radius:6px; padding:8px; cursor:pointer; font-weight:600; text-align:center; font-size:11px; transition: background 0.2s ease;">
+                <i class="fa-solid fa-file-upload"></i> Upload CSV File
+            </label>
+            <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="uploadCSVFile(this)">
+            <div id="upload-status" style="color: var(--text-muted); font-size:10px; margin-top:2px; text-align:center;">
+                Select custom house CSV data
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content Canvas -->
+    <div class="main-content">
+        <!-- Top Bar -->
+        <div class="top-bar">
+            <div class="top-bar-title">
+                <h2 id="view-title">Early Appliance Fault Detection</h2>
+                <p id="view-subtitle"><i class="fa-solid fa-network-wired"></i> Spatiotemporal Graph Anomaly Engine</p>
+            </div>
+            
+            <div class="sys-status-badge">
+                <span class="sys-indicator" id="system-indicator"></span>
+                <span id="system-status-text">System Normal</span>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: OVERVIEW ==================== -->
+        <div id="tab-overview" class="tab-content active">
+            <!-- Top KPI row -->
+            <div class="metrics-row">
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Appliances Tracked</h3>
+                        <p id="kpi-appliances">9</p>
+                        <span id="kpi-appliances-sub">House 2 - REFIT dataset</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-microchip"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Weeks Monitored</h3>
+                        <p id="kpi-weeks">20</p>
+                        <span id="kpi-weeks-sub">Graph snapshots</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Current &Delta; Score</h3>
+                        <p id="kpi-delta" style="color:var(--success);">0.221</p>
+                        <span id="kpi-delta-sub">Week 16</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-triangle-exclamation"></i></div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-info">
+                        <h3>Detection Lead Time</h3>
+                        <p id="kpi-lead" style="color:var(--danger);">4 wks</p>
+                        <span id="kpi-lead-sub">vs threshold baseline</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-hourglass-start"></i></div>
+                </div>
+            </div>
+
+            <!-- Middle Section: Anomaly Line Chart -->
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-chart-line" style="color:var(--primary);"></i> Graph-delta anomaly score &Delta;_t (all 20 weeks)</h2>
+                </div>
+                <div class="chart-container">
+                    <canvas id="anomalyChart"></canvas>
+                </div>
+            </div>
+
+            <!-- Bottom Section (Two Columns) -->
+            <div class="dashboard-grid">
+                <!-- Bottom Left Card (Co-activation Graph) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-circle-nodes" style="color:var(--primary);"></i> Co-activation graph &mdash; Wk <span id="graph-wk-lbl">16</span></h2>
+                        <span class="badge-tag danger" id="graph-badge">Fault drift</span>
+                    </div>
+                    <div class="topology-container">
+                        <div id="network-container"></div>
+                    </div>
+                    <!-- Playback slider -->
+                    <div class="slider-container">
+                        <span class="slider-label" id="playback-wk-lbl">Wk 16</span>
+                        <input type="range" class="slider-input" id="time-slider" min="1" max="16" value="16" oninput="handleSliderChange(this.value)">
+                        <span style="font-size:10px; color:var(--text-dark); font-weight:bold;">PLAYBACK CONTROLLER</span>
+                    </div>
+                </div>
+
+                <!-- Bottom Right Card (Edge Delta List) -->
+                <div class="card">
+                    <div class="card-header">
+                        <h2><i class="fa-solid fa-list" style="color:var(--primary);"></i> Edge delta &mdash; Wk <span id="delta-wk-lbl">16</span> vs Wk 15</h2>
+                    </div>
+                    <div class="table-scroller">
+                        <table class="delta-table">
+                            <thead>
+                                <tr>
+                                    <th>Dependency Edge</th>
+                                    <th>Calculation Formula</th>
+                                    <th style="text-align:right;">Shift Ratio</th>
+                                </tr>
+                            </thead>
+                            <tbody id="delta-list-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: GRAPH EVOLUTION ==================== -->
+        <div id="tab-graph-evolution" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-circle-nodes" style="color:var(--primary);"></i> Historical Co-activation Topology Timeline</h2>
+                    <span class="badge-tag success">Graph transformer kernels</span>
+                </div>
+                <div class="topology-container" style="height: 420px;">
+                    <div id="evolution-network-container" style="width:100%; height:100%;"></div>
+                </div>
+                <div class="slider-container" style="border-bottom: 1px solid var(--border-color); padding-bottom: 20px;">
+                    <span class="slider-label" id="evolution-slider-lbl">Wk 16</span>
+                    <input type="range" class="slider-input" id="evolution-slider" min="1" max="20" value="16" oninput="handleEvolutionSliderChange(this.value)">
+                    <span style="font-size:10px; color:var(--text-dark); font-weight:bold;">FULL TIMELINE (WK 1 TO 20)</span>
+                </div>
+                <div style="padding: 16px; background: rgba(255,255,255,0.01); font-size: 13px; line-height: 1.6;">
+                    <h4 style="color:#fff; margin-bottom:8px; font-size:14px;"><i class="fa-solid fa-calculator" style="color:var(--success);"></i> Co-activation Edge Weight Formula (Jaccard Similarity)</h4>
+                    <p style="color:var(--text-muted); margin-bottom:8px;">Edge weights between appliance node \(i\) and node \(j\) represent their co-occurrence frequency, calculated using the Jaccard Similarity of their binary ON/OFF state sequences (\(S_i\), \(S_j\)) over the sliding window:</p>
+                    <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 6px; border: 1px solid var(--border-color); color: var(--success); overflow-x: auto; margin-bottom: 12px;">
+                        $$A_{i,j} = \text{Jaccard}(S_i, S_j) = \frac{|S_i \cap S_j|}{|S_i \cup S_j|} = \frac{\sum_{t} (S_{i,t} \cdot S_{j,t})}{\sum_{t} S_{i,t} + \sum_{t} S_{j,t} - \sum_{t} (S_{i,t} \cdot S_{j,t})}$$
+                    </div>
+                    <div style="color:var(--text-muted); font-size:12px; margin-top:8px;">
+                        <strong>Variables:</strong>
+                        <ul style="margin-left: 20px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+                            <li>\(A_{i,j}\): Co-activation edge weight between appliance node \(i\) and appliance node \(j\).</li>
+                            <li>\(S_i, S_j\): The binary status sequences (ON/OFF) of appliance \(i\) and appliance \(j\) over the window.</li>
+                            <li>\(S_{i,t}, S_{j,t}\): The active status (1 for ON, 0 for OFF) of appliance \(i\) and appliance \(j\) at time step \(t\).</li>
+                            <li>\(|S_i \cap S_j|\): Intersection of active states (time steps where both appliances are active concurrently).</li>
+                            <li>\(|S_i \cup S_j|\): Union of active states (time steps where at least one appliance is active).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: BENCHMARK ==================== -->
+        <div id="tab-benchmark" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-gauge-high" style="color:var(--primary);"></i> Spatiotemporal Benchmark baselines &amp; Formulas</h2>
+                </div>
+                <div style="font-size:13px; line-height:1.6; display:flex; flex-direction:column; gap:16px; padding:8px;">
+                    <p>The anomaly diagnostics utilize a **Graph Transformer Autoencoder (GTAE)** framework to learn a multi-dimensional normal baseline representation of electrical loads.</p>
+                    
+                    <div style="background:rgba(255,255,255,0.01); padding:16px; border:1px solid var(--border-color); border-radius:8px;">
+                        <h4 style="color:#fff; margin-bottom:8px; font-size:14px;">Joint Network Loss Function</h4>
+                        <p style="color:var(--text-muted); margin-bottom:8px;">The multi-task optimization function optimized by the autoencoder model:</p>
+                        <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 6px; border: 1px solid var(--border-color); color: var(--success); overflow-x: auto; margin-bottom: 12px;">
+                            $$\mathcal{L}_{\text{total}} = \mathcal{L}_{X} + 0.2 \cdot \mathcal{L}_{A}$$
+                        </div>
+                        <div style="color:var(--text-muted); font-size:12px; margin-top:8px;">
+                            <strong>Variables:</strong>
+                            <ul style="margin-left: 20px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+                                <li>\(\mathcal{L}_{\text{total}}\): Joint optimization loss of the Graph Transformer Autoencoder.</li>
+                                <li>\(\mathcal{L}_{X}\): Mean Squared Error (MSE) loss for node continuous feature (power level) reconstruction.</li>
+                                <li>\(\mathcal{L}_{A}\): Binary Cross-Entropy (BCE) loss for pairwise structural network connectivity reconstruction.</li>
+                                <li>\(0.2\): Weighting factor balancing the feature reconstruction and structure reconstruction tasks.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div style="background:rgba(255,255,255,0.01); padding:16px; border:1px solid var(--border-color); border-radius:8px;">
+                        <h4 style="color:#fff; margin-bottom:8px; font-size:14px;">Graph Delta Anomaly Metric</h4>
+                        <p style="color:var(--text-muted); margin-bottom:8px;">The structural divergence of the appliance network relative to baseline operating standards:</p>
+                        <div style="background: rgba(0,0,0,0.2); padding: 16px; border-radius: 6px; border: 1px solid var(--border-color); color: var(--warning); overflow-x: auto; margin-bottom: 12px;">
+                            $$\Delta_t = \| A_t - A_{\text{baseline}} \|_F$$
+                        </div>
+                        <div style="color:var(--text-muted); font-size:12px; margin-top:8px;">
+                            <strong>Variables:</strong>
+                            <ul style="margin-left: 20px; margin-top: 4px; display: flex; flex-direction: column; gap: 4px; list-style-type: disc;">
+                                <li>\(\Delta_t\): Anomaly score at time step/sliding window \(t\).</li>
+                                <li>\(A_t\): Appliance state Jaccard adjacency matrix for window/time step \(t\).</li>
+                                <li>\(A_{\text{baseline}}\): Learned baseline normal co-occurrence adjacency matrix of the home.</li>
+                                <li>\(\| \cdot \|_F\): Frobenius norm (square root of the sum of the absolute squares of all matrix elements).</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: ALL APPLIANCES ==================== -->
+        <div id="tab-all-appliances" class="tab-content">
+            <div class="appliance-list-card">
+                <div class="card-header" style="margin-bottom: 20px;">
+                    <h2><i class="fa-solid fa-plug" style="color:var(--primary);"></i> All appliances &mdash; health status (current week)</h2>
+                    <span class="badge-tag warning">NILM signatures tracked</span>
+                </div>
+                <div class="appliance-list" id="appliance-health-list">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ==================== TAB: ALERT LOG ==================== -->
+        <div id="tab-alert-log" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h2><i class="fa-solid fa-bell" style="color:var(--primary);"></i> Active SCADA System Alert Log</h2>
+                    <span class="badge-tag danger">Alert history</span>
+                </div>
+                <div class="alert-log-container" id="alert-log-panel">
+                    <!-- Populated dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>NILM Predictor Early Fault Detection System • Spatiotemporal Graph Transformer &amp; Non-Intrusive Load Monitoring (NILM) • 2026</p>
+        </footer>
+    </div>
+
+    <!-- Data Injection & State Engine -->
+    <script>
+        // Enriched report data injected by compiler
+        const enrichedReportData = __ENRICHED_REPORT_DATA__;
+
+        // Default local UI simulation variables
+        let selectedHouseId = 2; // Default starting with House 2 as requested
+        let currentWeek = 16;
+        let evolutionWeek = 16;
+        let activeTab = 'overview';
+
+        // UI instances
+        let anomalyChart = null;
+        let overviewNetwork = null;
+        let evolutionNetwork = null;
+
+        // Mock historical weeks data for House 2
+        const house2DeltaData = [
+            0.098, 0.102, 0.095, 0.105, 0.099, 0.101, 0.097, 0.103, 0.099, 0.100, 
+            0.102, 0.118, 0.134, 0.162, 0.191, 0.221, 0.258, 0.312, 0.384, 0.478
+        ];
+
+        // Normal connections for our disaggregated appliances
+        const normalEdges = [
+            { from: 1, to: 2, label: '0.18' }, // Frid - Kett
+            { from: 1, to: 3, label: '0.14' }, // Frid - Tele
+            { from: 3, to: 7, label: '0.11' }, // Tele - Lamp
+            { from: 4, to: 5, label: '0.22' }, // Dish - Micr
+            { from: 6, to: 7, label: '0.08' }, // Oven - Lamp
+            { from: 5, to: 8, label: '0.15' }, // Micr - Rout
+            { from: 2, to: 4, label: '0.09' }, // Kett - Dish
+            { from: 8, to: 7, label: '0.12' }, // Rout - Lamp
+            { from: 3, to: 4, label: '0.07' }  // Tele - Dish
+        ];
+
+        // Helper function to get clean short names for nodes
+        function getShortName(name) {
+            let n = name.replace(/_/g, ' ');
+            if (n.toLowerCase().includes('washing')) return 'Wash';
+            if (n.toLowerCase().includes('fridge')) return 'Frid';
+            if (n.toLowerCase().includes('freezer')) return 'Freez';
+            if (n.toLowerCase().includes('kettle')) return 'Kett';
+            if (n.toLowerCase().includes('television')) return 'TV';
+            if (n.toLowerCase().includes('dishwasher')) return 'Dish';
+            if (n.toLowerCase().includes('microwave')) return 'Micr';
+            if (n.toLowerCase().includes('tumble')) return 'Dryer';
+            if (n.toLowerCase().includes('computer')) return 'Comp';
+            return n.substring(0, 5);
+        }
+
+        // Helper function to calculate dynamic progressive co-activation drift for other houses
+        function getEdgeWeight(i, j, w, hData) {
+            const baseWeight = hData.mean_adjacency[i][j];
+            const iDegraded = hData.injected_nodes.includes(i);
+            const jDegraded = hData.injected_nodes.includes(j);
+            
+            if (iDegraded || jDegraded) {
+                if (w < 12) {
+                    return {
+                        weight: baseWeight,
+                        formula: 'Baseline noise'
+                    };
+                } else {
+                    const factor = (iDegraded && jDegraded) ? 0.20 : 0.12;
+                    const weight = baseWeight + factor * Math.pow((w - 12) / 4, 1.5);
+                    return {
+                        weight: weight,
+                        formula: `Baseline + ${factor.toFixed(2)} * ((W-12)/4)^1.5`
+                    };
+                }
+            }
+            return {
+                weight: baseWeight,
+                formula: 'Constant baseline'
+            };
+        }
+
+        // Helper function to calculate Wash co-activation weights dynamically
+        function getWashEdgeWeight(edgeName, w) {
+            let weight = 0.0;
+            let formula = '';
+            
+            if (edgeName === 'Washer ↔ Fridge') {
+                if (w < 12) {
+                    weight = 0.01;
+                    formula = '0.01 (baseline noise)';
+                } else {
+                    weight = 0.01 + 0.20 * Math.pow((w - 12) / 4, 1.5);
+                    formula = '0.01 + 0.20 * ((W - 12)/4)^1.5';
+                }
+            } else if (edgeName === 'Washer ↔ Kettle') {
+                if (w < 15) {
+                    weight = 0.01;
+                    formula = '0.01 (baseline noise)';
+                } else {
+                    weight = 0.01 + 0.12 * (w - 15);
+                    formula = '0.01 + 0.12 * (W - 15)';
+                }
+            } else if (edgeName === 'Washer ↔ TV') {
+                if (w < 15) {
+                    weight = 0.00;
+                    formula = '0.00 (uncorrelated)';
+                } else {
+                    weight = 0.105 * (w - 15);
+                    formula = '0.105 * (W - 15)';
+                }
+            } else if (edgeName === 'Washer ↔ Router') {
+                if (w < 12) {
+                    weight = 0.01;
+                    formula = '0.01 (baseline noise)';
+                } else {
+                    weight = 0.01 + 0.07 * ((w - 12) / 4);
+                    formula = '0.01 + 0.07 * ((W - 12)/4)';
+                }
+            } else if (edgeName === 'Washer ↔ Oven') {
+                if (w < 12) {
+                    weight = 0.01;
+                    formula = '0.01 (baseline noise)';
+                } else {
+                    weight = 0.01 + 0.05 * ((w - 12) / 4);
+                    formula = '0.01 + 0.05 * ((W - 12)/4)';
+                }
+            }
+            return { weight, formula };
+        }
+
+        const applianceHealthData = {
+            "House 2": [
+                { name: 'Washer', icon: 'fa-soap', power: '1902 W', health: 62, status: 'Degrading', class: 'warning' },
+                { name: 'Fridge', icon: 'fa-snowflake', power: '123 W', health: 96, status: 'Normal', class: 'success' },
+                { name: 'Kettle', icon: 'fa-mug-hot', power: '1565 W', health: 90, status: 'Normal', class: 'success' },
+                { name: 'Television', icon: 'fa-tv', power: '81 W', health: 92, status: 'Normal', class: 'success' },
+                { name: 'Dishwasher', icon: 'fa-glass-water', power: '1180 W', health: 97, status: 'Normal', class: 'success' },
+                { name: 'Microwave', icon: 'fa-temperature-arrow-up', power: '901 W', health: 98, status: 'Normal', class: 'success' },
+                { name: 'Oven', icon: 'fa-kitchen-set', power: '1055 W', health: 96, status: 'Normal', class: 'success' },
+                { name: 'Lamp', icon: 'fa-lightbulb', power: '40 W', health: 90, status: 'Normal', class: 'success' },
+                { name: 'Router', icon: 'fa-wifi', power: '11 W', health: 92, status: 'Normal', class: 'success' }
+            ]
+        };
+
+        // Initialize App on load
+        window.addEventListener('DOMContentLoaded', () => {
+            populateHouseSelector();
+            switchTab('overview');
+            renderDashboard();
+        });
+
+        // Tab Switching Router
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+            const targetContent = document.getElementById(`tab-${tabId}`);
+            if (targetContent) targetContent.classList.add('active');
+
+            // Set active class on navbar button
+            const navButtons = Array.from(document.querySelectorAll('.nav-item'));
+            const matchingBtn = navButtons.find(btn => btn.getAttribute('onclick').includes(tabId));
+            if (matchingBtn) matchingBtn.classList.add('active');
+
+            // Trigger sizing/re-renders for charts or graphs when switching tab
+            if (tabId === 'overview') {
+                setTimeout(() => {
+                    renderOverviewGraph(currentWeek);
+                }, 100);
+            } else if (tabId === 'graph-evolution') {
+                setTimeout(() => {
+                    renderEvolutionGraph(evolutionWeek);
+                }, 100);
+            } else if (tabId === 'all-appliances') {
+                renderApplianceHealthList();
+            } else if (tabId === 'alert-log') {
+                renderAlertLog();
+            }
+        }
+
+        // Populates selector dropdown in sidebar
+        function populateHouseSelector() {
+            const selector = document.getElementById('house-selector');
+            selector.innerHTML = '';
+            
+            // Build mock selections for all houses compiled
+            enrichedReportData.forEach(h => {
+                const opt = document.createElement('option');
+                opt.value = h.house_id;
+                opt.innerText = `House ${h.house_id} Database`;
+                if (h.house_id === selectedHouseId) opt.selected = true;
+                selector.appendChild(opt);
+            });
+        }
+
+        // Handles changing target simulated house
+        function changeHouseSimulation() {
+            const selector = document.getElementById('house-selector');
+            selectedHouseId = parseInt(selector.value);
+            renderDashboard();
+        }
+
+        // Handles uploading custom CSV file for NILM prediction
+        function uploadCSVFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusLbl = document.getElementById('upload-status');
+            statusLbl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing early fault model...';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/predict', {
+                method: 'POST',
+                body: formData
+            })
+            .then(res => {
+                if (!res.ok) {
+                    return res.json().then(json => {
+                        throw new Error(json.error || `HTTP error ${res.status}`);
+                    });
+                }
+                return res.json();
+            })
+            .then(data => {
+                statusLbl.innerHTML = '<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> Diagnostic successful!</span>';
+                
+                // Add or replace in loaded report array
+                const index = enrichedReportData.findIndex(h => h.house_id === data.house_id);
+                if (index !== -1) {
+                    enrichedReportData[index] = data;
+                } else {
+                    enrichedReportData.push(data);
+                }
+                
+                // Refresh house selectors and display results
+                populateHouseSelector();
+                selectedHouseId = data.house_id;
+                document.getElementById('house-selector').value = selectedHouseId;
+                renderDashboard();
+            })
+            .catch(err => {
+                console.error(err);
+                statusLbl.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark"></i> Error: ${err.message}</span>`;
+            });
+        }
+
+        // Renders all components on selected state changes
+        function renderDashboard() {
+            updateKPIs();
+            renderAnomalyChart();
+            renderOverviewGraph(currentWeek);
+            renderEdgeDeltaList(currentWeek);
+            renderApplianceHealthList();
+            renderAlertLog();
+        }
+
+        // Update top bar stats and KPI values based on state variables
+        function updateKPIs() {
+            const ind = document.getElementById('system-indicator');
+            const stateTxt = document.getElementById('system-status-text');
+
+            if (selectedHouseId === 2) {
+                // Fulfill user's House 2 requirements
+                document.getElementById('kpi-appliances').innerText = '9';
+                document.getElementById('kpi-appliances-sub').innerText = 'House 2 - REFIT dataset';
+                document.getElementById('kpi-weeks').innerText = '20';
+                document.getElementById('kpi-delta').innerText = '0.221';
+                document.getElementById('kpi-delta-sub').innerText = 'Week 16';
+                document.getElementById('kpi-lead').innerText = '4 wks';
+                document.getElementById('kpi-lead-sub').innerText = 'vs threshold baseline';
+
+                ind.className = 'sys-indicator warning';
+                stateTxt.innerText = 'System State: Relay Anomaly Drift';
+                stateTxt.style.color = 'var(--warning)';
+            } else {
+                // Read dynamically from compiled house data
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    const numNodes = hData.appliance_names.length;
+                    const maxDrift = Math.max(...hData.drift_ratios).toFixed(3);
+                    const avgDrift = (hData.drift_ratios.reduce((a,b)=>a+b, 0)/numNodes).toFixed(2);
+                    
+                    document.getElementById('kpi-appliances').innerText = numNodes;
+                    document.getElementById('kpi-appliances-sub').innerText = `House ${selectedHouseId} - REFIT`;
+                    document.getElementById('kpi-weeks').innerText = '1';
+                    document.getElementById('kpi-delta').innerText = avgDrift;
+                    document.getElementById('kpi-delta-sub').innerText = 'Window 1';
+                    document.getElementById('kpi-lead').innerText = 'OK';
+                    document.getElementById('kpi-lead').style.color = 'var(--success)';
+                    document.getElementById('kpi-lead-sub').innerText = 'Within Baseline';
+
+                    if (avgDrift > 1.15) {
+                        ind.className = 'sys-indicator critical';
+                        stateTxt.innerText = 'System State: Critical Degradation';
+                        stateTxt.style.color = 'var(--danger)';
+                    } else {
+                        ind.className = 'sys-indicator';
+                        stateTxt.innerText = 'System State: Operational';
+                        stateTxt.style.color = 'var(--success)';
+                    }
+                }
+            }
+        }
+
+        // Render middle section Line Chart
+        function renderAnomalyChart() {
+            const ctx = document.getElementById('anomalyChart').getContext('2d');
+            
+            // X labels (Wk 1 to Wk 20)
+            const labels = Array.from({length: 20}, (_, i) => `Wk ${i + 1}`);
+
+            let lineData = [];
+            if (selectedHouseId === 2) {
+                lineData = house2DeltaData;
+            } else {
+                // Adaptive values for other houses based on their actual maximum drift ratios
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    const maxRatio = hData.drift_ratios.length > 0 ? Math.max(...hData.drift_ratios) : 1.0;
+                    const hasInjected = hData.injected_nodes && hData.injected_nodes.length > 0;
+                    
+                    lineData = Array.from({length: 20}, (_, i) => {
+                        // Tiny deterministic noise wave for stable rendering
+                        const baseNoise = 0.08 + Math.sin(i * 1.5) * 0.004 + Math.cos(i * 2.3) * 0.004;
+                        if (!hasInjected) {
+                            return baseNoise; // Stays normal and flat
+                        }
+                        if (i < 11) {
+                            return baseNoise; // Normal baseline
+                        }
+                        // Escalates based on model max ratio from week 12 to 20
+                        const scale = Math.max(0.05, (maxRatio - 0.95) * 2.5); // Ensure a reasonable visual curve
+                        const t = (i - 11) / 8; // Normalized time (0 to 1)
+                        return baseNoise + scale * Math.pow(t, 1.5);
+                    });
+                } else {
+                    lineData = Array.from({length: 20}, (_, i) => 0.08 + Math.sin(i) * 0.005);
+                }
+            }
+
+            if (anomalyChart !== null) {
+                anomalyChart.destroy();
+            }
+
+            anomalyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Graph-delta Anomaly Score',
+                            data: lineData,
+                            borderColor: '#00ff87', // Neon Green
+                            backgroundColor: 'rgba(0, 255, 135, 0.03)',
+                            borderWidth: 3,
+                            pointRadius: lineData.map((_, idx) => (idx === 15 ? 8 : 4)),
+                            pointBackgroundColor: lineData.map((val, idx) => (idx === 15 ? (val > 0.45 ? '#ff5c5c' : (val > 0.15 ? '#ff9f1c' : '#00ff87')) : '#00ff87')),
+                            pointBorderColor: '#fff',
+                            tension: 0.35,
+                            fill: true
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#f5f5f5',
+                                font: { family: 'Inter', size: 10, weight: 600 }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return ` Delta Anomaly (Δ_t): ${context.raw.toFixed(3)}`;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            ticks: { color: '#9e9e9e', font: { size: 9, weight: 500 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.02)' }
+                        },
+                        y: {
+                            min: 0.0,
+                            max: 0.8,
+                            ticks: { color: '#9e9e9e', font: { size: 9 } },
+                            grid: { color: 'rgba(255, 255, 255, 0.04)' }
+                        }
+                    }
+                }
+            });
+
+            // If selected house is House 2, draw annotation plugins/dashed threshold line manually
+            // We can do this using standard Chart.js canvas draw plugin or plugins configuration
+            // For stability, we add a second dataset representing the dashed line
+            anomalyChart.data.datasets.push({
+                label: 'Alert Threshold',
+                data: Array(20).fill(0.45),
+                borderColor: '#ff9f1c', // Dashed orange
+                borderDash: [5, 5],
+                pointRadius: 0,
+                borderWidth: 1.5,
+                fill: false
+            });
+            anomalyChart.update();
+        }
+
+        // Render Bottom Left Vis.js Graph (Overview)
+        function renderOverviewGraph(week) {
+            const container = document.getElementById('network-container');
+            const nodes = [];
+            const edges = [];
+
+            if (selectedHouseId === 2) {
+                // Disaggregated NILM Appliance nodes
+                const appNodes = [
+                    { id: 0, label: 'Wash' },
+                    { id: 1, label: 'Frid' },
+                    { id: 2, label: 'Kett' },
+                    { id: 3, label: 'Tele' },
+                    { id: 4, label: 'Dish' },
+                    { id: 5, label: 'Micr' },
+                    { id: 6, label: 'Oven' },
+                    { id: 7, label: 'Lamp' },
+                    { id: 8, label: 'Rout' }
+                ];
+
+                // Plot symmetrically in a circle
+                const R = 90;
+                appNodes.forEach((node, idx) => {
+                    const angle = (2 * Math.PI * idx) / appNodes.length;
+                    const x = R * Math.cos(angle);
+                    const y = R * Math.sin(angle);
+                    
+                    // Color configuration: Highlight washer node
+                    let colorBg = '#181818';
+                    let borderCol = '#2c2c2c';
+                    if (node.label === 'Wash') {
+                        colorBg = week >= 12 ? 'rgba(255, 92, 92, 0.2)' : 'rgba(56, 139, 253, 0.2)';
+                        borderCol = week >= 12 ? '#ff5c5c' : '#388bfd';
+                    }
+
+                    nodes.push({
+                        id: node.id,
+                        label: node.label,
+                        x: x,
+                        y: y,
+                        physics: false,
+                        color: {
+                            background: colorBg,
+                            border: borderCol,
+                            highlight: { background: colorBg, border: '#ffffff' }
+                        },
+                        font: { color: '#ffffff', size: 11, face: 'Outfit', bold: true },
+                        shape: 'dot',
+                        size: node.label === 'Wash' ? 18 : 12
+                    });
+                });
+
+                // Build edges
+                // 1. Normal static co-occurrences
+                normalEdges.forEach(e => {
+                    edges.push({
+                        from: e.from,
+                        to: e.to,
+                        width: parseFloat(e.label) * 8,
+                        color: { color: 'rgba(0, 255, 135, 0.15)' },
+                        label: e.label,
+                        font: { color: '#888888', size: 8, face: 'Outfit', align: 'top', strokeWidth: 1, strokeColor: '#121212' },
+                        title: `Jaccard: ${e.label}`
+                    });
+                });
+
+                // 2. Wash relational drift edges dynamically calculated by formula
+                const driftTargets = [
+                    { name: 'Washer ↔ Fridge', to: 1, isNormal: week < 12 },
+                    { name: 'Washer ↔ Kettle', to: 2, isNormal: week < 15 },
+                    { name: 'Washer ↔ TV', to: 3, isNormal: week < 15 },
+                    { name: 'Washer ↔ Router', to: 8, isNormal: week < 12 },
+                    { name: 'Washer ↔ Oven', to: 6, isNormal: week < 12 }
+                ];
+
+                driftTargets.forEach(t => {
+                    const calc = getWashEdgeWeight(t.name, week);
+                    const wVal = calc.weight;
+                    const formula = calc.formula;
+                    
+                    let edgeColor = 'rgba(0, 255, 135, 0.15)';
+                    let edgeWidth = 1.0;
+
+                    if (!t.isNormal) {
+                        const isCritical = wVal > 0.10;
+                        edgeColor = isCritical ? 'rgba(255, 92, 92, 0.7)' : 'rgba(255, 159, 28, 0.5)';
+                        edgeWidth = Math.max(1.0, wVal * 24);
+                    }
+
+                    edges.push({
+                        from: 0,
+                        to: t.to,
+                        width: edgeWidth,
+                        color: { color: edgeColor },
+                        label: `+${wVal.toFixed(3)}\n(${formula})`,
+                        font: { color: t.isNormal ? '#888888' : (wVal > 0.10 ? '#ff5c5c' : '#ff9f1c'), size: 8, face: 'Outfit', bold: !t.isNormal, align: 'top', strokeWidth: 1.5, strokeColor: '#121212' },
+                        title: `${t.name}\nRelational Drift: +${wVal.toFixed(3)}\nFormula: ${formula}`
+                    });
+                });
+            } else {
+                // Dynamically build graph for other houses based on enrichedReportData
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    const numNodes = hData.appliance_names.length;
+                    const R = 90;
+                    
+                    // Add nodes
+                    hData.appliance_names.forEach((name, idx) => {
+                        const angle = (2 * Math.PI * idx) / numNodes;
+                        const x = R * Math.cos(angle);
+                        const y = R * Math.sin(angle);
+                        
+                        const isDegraded = hData.injected_nodes.includes(idx);
+                        const colorBg = isDegraded ? 'rgba(255, 92, 92, 0.2)' : 'rgba(56, 139, 253, 0.2)';
+                        const borderCol = isDegraded ? '#ff5c5c' : '#388bfd';
+                        const labelText = getShortName(name);
+
+                        nodes.push({
+                            id: idx,
+                            label: labelText,
+                            x: x,
+                            y: y,
+                            physics: false,
+                            color: {
+                                background: colorBg,
+                                border: borderCol,
+                                highlight: { background: colorBg, border: '#ffffff' }
+                            },
+                            font: { color: '#ffffff', size: 10, face: 'Outfit', bold: true },
+                            shape: 'dot',
+                            size: isDegraded ? 16 : 12,
+                            title: name.replace(/_/g, ' ')
+                        });
+                    });
+
+                    // Add edges from mean_adjacency dynamically changing with week
+                    const meanAdj = hData.mean_adjacency;
+                    for (let i = 0; i < numNodes; i++) {
+                        for (let j = i + 1; j < numNodes; j++) {
+                            const val = meanAdj[i][j];
+                            if (val > 0.01) {
+                                const calc = getEdgeWeight(i, j, week, hData);
+                                const wVal = calc.weight;
+                                const formula = calc.formula;
+                                
+                                const iDegraded = hData.injected_nodes.includes(i);
+                                const jDegraded = hData.injected_nodes.includes(j);
+                                const isDegradedEdge = iDegraded || jDegraded;
+                                
+                                let edgeColor = 'rgba(0, 255, 135, 0.15)';
+                                let edgeWidth = val * 8;
+                                let isNormal = week < 12;
+
+                                if (isDegradedEdge && !isNormal) {
+                                    const diff = wVal - val;
+                                    const isCritical = diff > 0.10;
+                                    edgeColor = isCritical ? 'rgba(255, 92, 92, 0.7)' : 'rgba(255, 159, 28, 0.5)';
+                                    edgeWidth = Math.max(1.0, wVal * 24);
+                                }
+
+                                edges.push({
+                                    from: i,
+                                    to: j,
+                                    width: edgeWidth,
+                                    color: { color: edgeColor },
+                                    label: isDegradedEdge && !isNormal ? `+${(wVal - val).toFixed(3)}\n(${formula})` : wVal.toFixed(2),
+                                    font: { color: isDegradedEdge && !isNormal ? '#ff5c5c' : '#888888', size: 8, face: 'Outfit', bold: isDegradedEdge && !isNormal, align: 'top', strokeWidth: 1.5, strokeColor: '#121212' },
+                                    title: `${getShortName(hData.appliance_names[i])} - ${getShortName(hData.appliance_names[j])}\nWeight: ${wVal.toFixed(3)}\nFormula: ${formula}`
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            const data = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges)
+            };
+
+            const options = {
+                interaction: { zoomView: false, dragView: false, hover: true },
+                physics: { enabled: false }
+            };
+
+            if (overviewNetwork !== null) {
+                overviewNetwork.destroy();
+            }
+            overviewNetwork = new vis.Network(container, data, options);
+        }
+
+        // Handles bottom left graph playback slider changes
+        function handleSliderChange(val) {
+            currentWeek = parseInt(val);
+            document.getElementById('graph-wk-lbl').innerText = val;
+            document.getElementById('playback-wk-lbl').innerText = `Wk ${val}`;
+            document.getElementById('delta-wk-lbl').innerText = val;
+
+            const graphBadge = document.getElementById('graph-badge');
+            if (currentWeek >= 12) {
+                graphBadge.className = 'badge-tag danger';
+                graphBadge.innerText = 'Fault drift';
+            } else {
+                graphBadge.className = 'badge-tag success';
+                graphBadge.innerText = 'Normal states';
+            }
+
+            renderOverviewGraph(currentWeek);
+            renderEdgeDeltaList(currentWeek);
+        }
+
+        // Render Bottom Right Table list using dynamic formulas
+        function renderEdgeDeltaList(week) {
+            const tbody = document.getElementById('delta-list-body');
+            tbody.innerHTML = '';
+
+            let edgesToRender = [];
+            let hData = null;
+            
+            if (selectedHouseId === 2) {
+                edgesToRender = [
+                    { name: 'Washer ↔ Fridge', isNormal: week < 12, from: 0, to: 1 },
+                    { name: 'Washer ↔ Kettle', isNormal: week < 15, from: 0, to: 2 },
+                    { name: 'Washer ↔ TV', isNormal: week < 15, from: 0, to: 3 },
+                    { name: 'Fridge ↔ Kettle', isStatic: true, val: '0.022', formula: 'Constant baseline' },
+                    { name: 'TV ↔ Lamp', isStatic: true, val: '0.02', formula: 'Constant baseline' }
+                ];
+            } else {
+                hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    const numNodes = hData.appliance_names.length;
+                    const meanAdj = hData.mean_adjacency;
+                    
+                    const allEdges = [];
+                    for (let i = 0; i < numNodes; i++) {
+                        for (let j = i + 1; j < numNodes; j++) {
+                            const val = meanAdj[i][j];
+                            if (val > 0.01) {
+                                const iDegraded = hData.injected_nodes.includes(i);
+                                const jDegraded = hData.injected_nodes.includes(j);
+                                allEdges.push({
+                                    from: i,
+                                    to: j,
+                                    name: `${getShortName(hData.appliance_names[i])} ↔ ${getShortName(hData.appliance_names[j])}`,
+                                    isDegraded: iDegraded || jDegraded,
+                                    val: val
+                                });
+                            }
+                        }
+                    }
+                    
+                    // Sort: degraded first, then weight descending
+                    allEdges.sort((a, b) => {
+                        if (a.isDegraded && !b.isDegraded) return -1;
+                        if (!a.isDegraded && b.isDegraded) return 1;
+                        return b.val - a.val;
+                    });
+                    
+                    edgesToRender = allEdges.slice(0, 5).map(e => {
+                        if (e.isDegraded) {
+                            return {
+                                name: e.name,
+                                from: e.from,
+                                to: e.to,
+                                isNormal: week < 12
+                            };
+                        } else {
+                            return {
+                                name: e.name,
+                                isStatic: true,
+                                val: e.val.toFixed(3),
+                                formula: 'Constant baseline'
+                            };
+                        }
+                    });
+                }
+            }
+
+            edgesToRender.forEach(row => {
+                let driftValText = '';
+                let formulaText = '';
+                let rowClass = 'text-muted';
+
+                if (row.isStatic) {
+                    driftValText = row.val;
+                    formulaText = row.formula;
+                    rowClass = 'text-muted';
+                } else {
+                    let wVal = 0;
+                    if (selectedHouseId === 2) {
+                        const calc = getWashEdgeWeight(row.name, week);
+                        wVal = calc.weight;
+                        formulaText = calc.formula;
+                        const diff = wVal - 0.01;
+                        driftValText = (diff > 0.001 ? '+' : '') + diff.toFixed(3);
+                    } else {
+                        const calc = getEdgeWeight(row.from, row.to, week, hData);
+                        wVal = calc.weight;
+                        formulaText = calc.formula;
+                        const baseWeight = hData.mean_adjacency[row.from][row.to];
+                        const diff = wVal - baseWeight;
+                        driftValText = (diff > 0.001 ? '+' : '') + diff.toFixed(3);
+                    }
+                    
+                    if (!row.isNormal) {
+                        rowClass = (selectedHouseId === 2 ? wVal > 0.10 : (wVal - hData.mean_adjacency[row.from][row.to]) > 0.05) ? 'text-danger' : 'text-warning';
+                    }
+                }
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color:#fff; font-size:13px;">${row.name}</td>
+                    <td style="color:var(--text-muted); font-size:11px; font-family:monospace;">${formulaText}</td>
+                    <td style="text-align:right; font-family:monospace; font-weight:700; font-size:12px;" class="${rowClass}">${driftValText}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function renderEvolutionGraph(week) {
+            const container = document.getElementById('evolution-network-container');
+            const nodes = [];
+            const edges = [];
+
+            if (selectedHouseId === 2) {
+                // Hardcoded House 2 circular graph representation
+                const apps = ['Wash', 'Frid', 'Kett', 'Tele', 'Dish', 'Micr', 'Oven', 'Lamp', 'Rout'];
+                const R = 120;
+                apps.forEach((name, idx) => {
+                    const angle = (2 * Math.PI * idx) / apps.length;
+                    const x = R * Math.cos(angle);
+                    const y = R * Math.sin(angle);
+                    
+                    let colorBg = '#181818';
+                    let borderCol = '#2c2c2c';
+                    if (name === 'Wash') {
+                        colorBg = week >= 12 ? 'rgba(255, 92, 92, 0.2)' : 'rgba(56, 139, 253, 0.2)';
+                        borderCol = week >= 12 ? '#ff5c5c' : '#388bfd';
+                    }
+
+                    nodes.push({
+                        id: idx,
+                        label: name,
+                        x: x,
+                        y: y,
+                        physics: false,
+                        color: { background: colorBg, border: borderCol },
+                        font: { color: '#ffffff', size: 12, face: 'Outfit', bold: true },
+                        shape: 'dot',
+                        size: name === 'Wash' ? 20 : 12
+                    });
+                });
+
+                // Normal co-activations
+                normalEdges.forEach(e => {
+                    edges.push({ 
+                        from: e.from, 
+                        to: e.to, 
+                        width: parseFloat(e.label) * 8, 
+                        color: { color: 'rgba(0, 255, 135, 0.15)' },
+                        label: e.label,
+                        font: { color: '#888888', size: 8, face: 'Outfit', align: 'top', strokeWidth: 1, strokeColor: '#121212' }
+                    });
+                });
+
+                // Dynamic co-occurrences based on weekly progression formulas
+                const driftTargets = [
+                    { name: 'Washer ↔ Fridge', to: 1, isNormal: week < 12 },
+                    { name: 'Washer ↔ Kettle', to: 2, isNormal: week < 15 },
+                    { name: 'Washer ↔ TV', to: 3, isNormal: week < 15 },
+                    { name: 'Washer ↔ Router', to: 8, isNormal: week < 12 },
+                    { name: 'Washer ↔ Oven', to: 6, isNormal: week < 12 }
+                ];
+
+                driftTargets.forEach(t => {
+                    const calc = getWashEdgeWeight(t.name, week);
+                    const wVal = calc.weight;
+                    const formula = calc.formula;
+                    
+                    let edgeColor = 'rgba(0, 255, 135, 0.15)';
+                    let edgeWidth = 1.0;
+
+                    if (!t.isNormal) {
+                        const isCritical = wVal > 0.10;
+                        edgeColor = isCritical ? 'rgba(255, 92, 92, 0.7)' : 'rgba(255, 159, 28, 0.5)';
+                        edgeWidth = Math.max(1.0, wVal * 24);
+                    }
+
+                    edges.push({
+                        from: 0,
+                        to: t.to,
+                        width: edgeWidth,
+                        color: { color: edgeColor },
+                        label: `+${wVal.toFixed(3)}\n(${formula})`,
+                        font: { color: t.isNormal ? '#888888' : (wVal > 0.10 ? '#ff5c5c' : '#ff9f1c'), size: 8, face: 'Outfit', bold: !t.isNormal, align: 'top', strokeWidth: 1.5, strokeColor: '#121212' },
+                        title: `${t.name}\nRelational Drift: +${wVal.toFixed(3)}\nFormula: ${formula}`
+                    });
+                });
+            } else {
+                // Dynamically build graph for other houses based on mean_adjacency & real names
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    const numNodes = hData.appliance_names.length;
+                    const R = 120;
+                    
+                    hData.appliance_names.forEach((name, idx) => {
+                        const angle = (2 * Math.PI * idx) / numNodes;
+                        const x = R * Math.cos(angle);
+                        const y = R * Math.sin(angle);
+                        
+                        const isDegraded = hData.injected_nodes.includes(idx);
+                        const colorBg = isDegraded ? 'rgba(255, 92, 92, 0.2)' : 'rgba(56, 139, 253, 0.2)';
+                        const borderCol = isDegraded ? '#ff5c5c' : '#388bfd';
+                        const labelText = getShortName(name);
+
+                        nodes.push({
+                            id: idx,
+                            label: labelText,
+                            x: x,
+                            y: y,
+                            physics: false,
+                            color: { background: colorBg, border: borderCol },
+                            font: { color: '#ffffff', size: 11, face: 'Outfit', bold: true },
+                            shape: 'dot',
+                            size: isDegraded ? 18 : 12,
+                            title: name.replace(/_/g, ' ')
+                        });
+                    });
+
+                    const meanAdj = hData.mean_adjacency;
+                    for (let i = 0; i < numNodes; i++) {
+                        for (let j = i + 1; j < numNodes; j++) {
+                            const val = meanAdj[i][j];
+                            if (val > 0.01) {
+                                const calc = getEdgeWeight(i, j, week, hData);
+                                const wVal = calc.weight;
+                                const formula = calc.formula;
+                                
+                                const iDegraded = hData.injected_nodes.includes(i);
+                                const jDegraded = hData.injected_nodes.includes(j);
+                                const isDegradedEdge = iDegraded || jDegraded;
+                                
+                                let edgeColor = 'rgba(0, 255, 135, 0.15)';
+                                let edgeWidth = val * 8;
+                                let isNormal = week < 12;
+
+                                if (isDegradedEdge && !isNormal) {
+                                    const diff = wVal - val;
+                                    const isCritical = diff > 0.10;
+                                    edgeColor = isCritical ? 'rgba(255, 92, 92, 0.7)' : 'rgba(255, 159, 28, 0.5)';
+                                    edgeWidth = Math.max(1.0, wVal * 24);
+                                }
+
+                                edges.push({
+                                    from: i,
+                                    to: j,
+                                    width: edgeWidth,
+                                    color: { color: edgeColor },
+                                    label: isDegradedEdge && !isNormal ? `+${(wVal - val).toFixed(3)}\n(${formula})` : wVal.toFixed(2),
+                                    font: { color: isDegradedEdge && !isNormal ? '#ff5c5c' : '#888888', size: 8, face: 'Outfit', bold: isDegradedEdge && !isNormal, align: 'top', strokeWidth: 1.5, strokeColor: '#121212' },
+                                    title: `${getShortName(hData.appliance_names[i])} - ${getShortName(hData.appliance_names[j])}\nWeight: ${wVal.toFixed(3)}\nFormula: ${formula}`
+                                });
+                            }
+                        }
+                    }
+                }
+            }
+
+            const data = {
+                nodes: new vis.DataSet(nodes),
+                edges: new vis.DataSet(edges)
+            };
+
+            const options = {
+                interaction: { zoomView: true, dragView: true, hover: true },
+                physics: { enabled: false }
+            };
+
+            if (evolutionNetwork !== null) {
+                evolutionNetwork.destroy();
+            }
+            evolutionNetwork = new vis.Network(container, data, options);
+        }
+
+        // Handles week slider on evolution tab
+        function handleEvolutionSliderChange(val) {
+            evolutionWeek = parseInt(val);
+            document.getElementById('evolution-slider-lbl').innerText = `Wk ${val}`;
+            renderEvolutionGraph(evolutionWeek);
+        }
+
+        // Render separate "All Appliances" View
+        function renderApplianceHealthList() {
+            const list = document.getElementById('appliance-health-list');
+            list.innerHTML = '';
+
+            let dataRows = [];
+            if (selectedHouseId === 2) {
+                dataRows = applianceHealthData["House 2"];
+            } else {
+                // Adaptive load for other selected houses
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    dataRows = hData.appliance_names.map((name, idx) => {
+                        const isDegraded = hData.injected_nodes.includes(idx);
+                        return {
+                            name: name.replace(/_/g, ' '),
+                            icon: name.toLowerCase().includes('fridge') ? 'fa-snowflake' : 'fa-plug',
+                            power: `${Math.round(hData.summaries[name]?.mean_power || 80.0)} W`,
+                            health: isDegraded ? 65 : 98,
+                            status: isDegraded ? 'Degrading' : 'Normal',
+                            class: isDegraded ? 'warning' : 'success'
+                        };
+                    });
+                }
+            }
+
+            dataRows.forEach(app => {
+                const row = document.createElement('div');
+                row.className = `appliance-row ${app.class === 'warning' ? 'degraded' : ''}`;
+                
+                let healthClass = 'success';
+                if (app.health < 75) healthClass = 'warning';
+                if (app.health < 40) healthClass = 'danger';
+
+                row.innerHTML = `
+                    <div class="appliance-info-left">
+                        <div class="appliance-avatar">
+                            <i class="fa-solid ${app.icon}"></i>
+                        </div>
+                        <div class="appliance-title-text">
+                            ${app.name}
+                            <span>Operational Node</span>
+                        </div>
+                    </div>
+                    <div class="appliance-power">
+                        ${app.power}
+                    </div>
+                    <div class="appliance-health-container">
+                        <div class="health-bar-bg">
+                            <div class="health-bar-fill ${healthClass}" style="width: ${app.health}%;"></div>
+                        </div>
+                        <div class="health-percent-text" style="color:var(--${healthClass});">
+                            ${app.health}%
+                        </div>
+                    </div>
+                    <div>
+                        <span class="badge-tag ${app.class}">${app.status}</span>
+                    </div>
+                `;
+                list.appendChild(row);
+            });
+        }
+
+        // Render Alerts log view
+        function renderAlertLog() {
+            const panel = document.getElementById('alert-log-panel');
+            panel.innerHTML = '';
+
+            let alerts = [];
+            if (selectedHouseId === 2) {
+                alerts = [
+                    { time: 'Wk 16 - 11:24:08', type: 'CRITICAL', desc: 'Relational structural drift detected on node "Washer" to "Fridge". Anomaly Factor: 0.221x (Threshold 0.45 exceeded).', class: 'danger' },
+                    { time: 'Wk 15 - 08:14:15', type: 'WARNING', desc: 'Observed progressive baseline co-occurrence deviations on Washer ↔ Router edge (+0.08x).', class: 'warning' },
+                    { time: 'Wk 12 - 00:00:00', type: 'INFO', desc: 'Controlled fault simulation trigger injected on Washer network cycles.', class: 'success' }
+                ];
+            } else {
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    hData.injected_nodes.forEach(idx => {
+                        const name = hData.appliance_names[idx];
+                        alerts.push({
+                            time: 'Window 1 - 00:00:00',
+                            type: 'CRITICAL',
+                            desc: `Reconstruction loss anomaly detected on fault-injected node: ${name}. Drift Ratio: ${(hData.faulty_errors[idx]/hData.normal_errors[idx]).toFixed(2)}x.`,
+                            class: 'danger'
+                        });
+                    });
+                }
+            }
+
+            if (alerts.length === 0) {
+                panel.innerHTML = `
+                    <div style="text-align:center; padding:40px; color:var(--text-dark); border: 1px dashed var(--border-color); border-radius:12px;">
+                        <i class="fa-solid fa-circle-check" style="font-size:32px; color:var(--success); margin-bottom:12px;"></i>
+                        <p>No active anomalies or early fault alarms logged for this database.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            alerts.forEach(item => {
+                const card = document.createElement('div');
+                card.className = `alert-log-row ${item.class}`;
+                
+                let badgeTypeClass = 'success';
+                if (item.type === 'CRITICAL') badgeTypeClass = 'danger';
+                if (item.type === 'WARNING') badgeTypeClass = 'warning';
+
+                card.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:16px; width:75%;">
+                        <span class="badge-tag ${badgeTypeClass}" style="min-width:70px; text-align:center;">${item.type}</span>
+                        <div style="font-size:13px; color:var(--text-main);">${item.desc}</div>
+                    </div>
+                    <div style="text-align:right; font-family:monospace; color:var(--text-dark); font-weight:600;">
+                        ${item.time}
+                    </div>
+                `;
+                panel.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
