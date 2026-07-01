@@ -1,0 +1,1707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SMART NILM Predictor - Advanced Predictive Maintenance Platform</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Vis.js Standalone -->
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <!-- KaTeX CSS & JS for Mathematical rendering -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '\\(', right: '\\)', display: false}]});"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            /* Sleek Dark Theme Palette */
+            --bg-base: #0c0f12;
+            --bg-sidebar: #13171c;
+            --bg-card: #171d24;
+            --border-color: #232c37;
+            --border-accent: #2e3b4b;
+            
+            --text-main: #f3f6f9;
+            --text-muted: #8596a9;
+            --text-dark: #4b5b6d;
+            
+            --primary: #388bfd; /* Blue */
+            --primary-hover: #1f6feb;
+            --primary-glow: rgba(56, 139, 253, 0.15);
+            
+            --success: #00ff87; /* Neon Green */
+            --success-glow: rgba(0, 255, 135, 0.15);
+            
+            --warning: #ff9f1c; /* Orange */
+            --warning-glow: rgba(255, 159, 28, 0.15);
+            
+            --danger: #ff5c5c; /* Red */
+            --danger-glow: rgba(255, 92, 92, 0.15);
+            
+            --font-title: 'Outfit', sans-serif;
+            --font-body: 'Inter', sans-serif;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: var(--font-body);
+            display: flex;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 260px;
+            background-color: var(--bg-sidebar);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            padding: 24px;
+            flex-shrink: 0;
+            height: 100vh;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .sidebar-logo {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            margin: 0 auto 16px auto;
+            display: block;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-logo:hover {
+            transform: scale(1.05);
+            border-color: var(--primary);
+            box-shadow: 0 4px 16px rgba(56, 139, 253, 0.3);
+        }
+
+        .sidebar-header h1 {
+            font-family: var(--font-title);
+            font-size: 16px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sidebar-header p {
+            font-size: 9px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 6px;
+            font-weight: 700;
+            text-align: center;
+        }
+
+        .nav-section {
+            margin-bottom: 24px;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--text-dark);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+        }
+
+        .nav-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 10px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: var(--font-title);
+            font-size: 14px;
+            font-weight: 600;
+            text-align: left;
+            transition: all 0.2s ease;
+            width: 100%;
+        }
+
+        .nav-item:hover {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .nav-item.active {
+            color: #fff;
+            background: var(--primary-glow);
+            border-color: rgba(56, 139, 253, 0.3);
+        }
+
+        .nav-item i {
+            font-size: 14px;
+            width: 16px;
+            text-align: center;
+        }
+
+        /* Sidebar upload/control box */
+        .simulation-box {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            margin-top: auto;
+            font-size: 11px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .simulation-title {
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .house-select {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 4px;
+            outline: none;
+            cursor: pointer;
+            width: 100%;
+            font-family: var(--font-body);
+        }
+
+        .upload-btn-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .btn-upload {
+            border: 1px dashed var(--primary);
+            color: var(--primary);
+            background-color: var(--primary-glow);
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            text-align: center;
+            display: block;
+            transition: all 0.2s ease;
+        }
+
+        .btn-upload:hover {
+            background-color: rgba(56, 139, 253, 0.25);
+        }
+
+        .upload-btn-wrapper input[type=file] {
+            font-size: 100px;
+            position: absolute;
+            left: 0;
+            top: 0;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* Real-Time Alert Window Styles */
+        .alert-window {
+            background: rgba(255, 92, 92, 0.03);
+            border: 1px solid rgba(255, 92, 92, 0.15);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .alert-window.nominal {
+            background: rgba(0, 255, 135, 0.02);
+            border-color: rgba(0, 255, 135, 0.12);
+        }
+
+        .alert-window-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .alert-window-header h3 {
+            font-family: var(--font-title);
+            font-size: 14px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #ff5c5c;
+            margin: 0;
+        }
+
+        .alert-window.nominal .alert-window-header h3 {
+            color: #00ff87;
+        }
+
+        .alert-count-badge {
+            background: rgba(255, 92, 92, 0.1);
+            color: #ff5c5c;
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 8px;
+            border-radius: 20px;
+            text-transform: uppercase;
+        }
+
+        .alert-window.nominal .alert-count-badge {
+            background: rgba(0, 255, 135, 0.1);
+            color: #00ff87;
+        }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alert-item {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            transition: all 0.2s ease;
+        }
+
+        .alert-item:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .alert-item-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-item-left i {
+            font-size: 16px;
+        }
+
+        .alert-item.critical i { color: #ff5c5c; }
+        .alert-item.warning i { color: #ff9f1c; }
+
+        .alert-item-details h4 {
+            margin: 0;
+            font-family: var(--font-title);
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .alert-item-details p {
+            margin: 2px 0 0 0;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .alert-item-action {
+            text-align: right;
+        }
+
+        .alert-item-action span {
+            font-family: monospace;
+            font-weight: 600;
+        }
+
+        .alert-item-action p {
+            margin: 2px 0 0 0;
+            font-size: 10px;
+            color: var(--text-muted);
+        }
+
+        .animate-flicker {
+            animation: flicker 1.5s infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 0.4; }
+            100% { opacity: 1; }
+        }
+
+        /* Main Workspace */
+        .main-content {
+            flex-grow: 1;
+            padding: 30px;
+            overflow-y: auto;
+            max-width: calc(100vw - 260px);
+        }
+
+        /* Top Bar Info */
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 16px;
+        }
+
+        .system-status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sys-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 8px var(--success);
+        }
+
+        .sys-indicator.warning {
+            background-color: var(--warning);
+            box-shadow: 0 0 8px var(--warning);
+        }
+
+        .sys-indicator.critical {
+            background-color: var(--danger);
+            box-shadow: 0 0 8px var(--danger);
+        }
+
+        .system-title h2 {
+            font-family: var(--font-title);
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .system-title p {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        /* Dashboard Overview Metrics Grid */
+        .kpi-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .kpi-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .kpi-info h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+
+        .kpi-info .value {
+            font-family: var(--font-title);
+            font-size: 24px;
+            font-weight: 800;
+        }
+
+        .kpi-info span {
+            font-size: 11px;
+            color: var(--text-muted);
+            display: block;
+            margin-top: 4px;
+        }
+
+        .metric-icon {
+            font-size: 20px;
+            color: var(--primary);
+            background: var(--primary-glow);
+            width: 44px;
+            height: 44px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Appliance Health Grid (Module 7) */
+        .appliance-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .health-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .health-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-accent);
+        }
+
+        .health-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .health-card-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .health-card-title i {
+            font-size: 18px;
+            color: var(--primary);
+        }
+
+        .health-card-title h4 {
+            font-family: var(--font-title);
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .health-badge {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 4px 8px;
+            border-radius: 4px;
+            text-transform: uppercase;
+        }
+
+        .health-badge.success { background: var(--success-glow); color: var(--success); }
+        .health-badge.warning { background: var(--warning-glow); color: var(--warning); }
+        .health-badge.danger { background: var(--danger-glow); color: var(--danger); }
+
+        .health-radial-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+        }
+
+        .health-radial-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .health-radial-val {
+            font-size: 24px;
+            font-family: var(--font-title);
+            font-weight: 800;
+            color: var(--success);
+        }
+        .health-radial-val.warning { color: var(--warning); }
+        .health-radial-val.danger { color: var(--danger); }
+
+        .health-stats {
+            font-size: 11px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 12px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+
+        .recs-container {
+            margin-top: 12px;
+            font-size: 10px;
+            background: rgba(255,255,255,0.01);
+            padding: 8px;
+            border-radius: 6px;
+            border-left: 2px solid var(--primary);
+        }
+
+        /* Dual Column Layout */
+        .grid-columns-2 {
+            display: grid;
+            grid-template-columns: 1.5fr 1fr;
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .chart-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .chart-box h2 {
+            font-family: var(--font-title);
+            font-size: 15px;
+            font-weight: 700;
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 250px;
+            width: 100%;
+        }
+
+        /* Vis.js network containers */
+        .network-box {
+            background-color: #11151a;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            height: 240px;
+            width: 100%;
+            position: relative;
+        }
+
+        /* Table styles */
+        .table-wrapper {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+
+        th, td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(255,255,255,0.01);
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        .text-success { color: var(--success) !important; font-weight: 600; }
+        .text-warning { color: var(--warning) !important; font-weight: 600; }
+        .text-danger { color: var(--danger) !important; font-weight: 600; }
+
+        /* Report Exporters (Module 14) */
+        .report-section {
+            display: flex;
+            gap: 12px;
+            margin-top: 10px;
+        }
+
+        .btn-action {
+            background-color: var(--border-color);
+            border: 1px solid var(--border-accent);
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            background-color: var(--border-accent);
+        }
+
+        /* Playback slide bar */
+        .slider-bar {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: rgba(255,255,255,0.01);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin-bottom: 16px;
+        }
+
+        .slider-bar input[type=range] {
+            flex-grow: 1;
+            cursor: pointer;
+        }
+
+        /* Tab panels */
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-dark);
+            border-top: 1px solid var(--border-color);
+            padding-top: 16px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Sidebar Section -->
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <img class="sidebar-logo" src="/Logo.png" alt="NILM Logo" onerror="this.src='/aegis_logo.png'">
+            <h1>SMART NILM Predictor</h1>
+            <p>Predictive Maintenance</p>
+        </div>
+
+        <div class="nav-section">
+            <div class="nav-section-title">Navigation</div>
+            <div class="nav-list">
+                <button class="nav-item active" onclick="switchTab('overview')">
+                    <i class="fa-solid fa-gauge"></i> Overview
+                </button>
+                <button class="nav-item" onclick="switchTab('all-appliances')">
+                    <i class="fa-solid fa-plug"></i> Appliance Health
+                </button>
+                <button class="nav-item" onclick="switchTab('graph-evolution')">
+                    <i class="fa-solid fa-project-diagram"></i> Graph Evolution
+                </button>
+                <button class="nav-item" onclick="switchTab('reports')">
+                    <i class="fa-solid fa-file-export"></i> Reports
+                </button>
+            </div>
+        </div>
+
+        <div class="simulation-box">
+            <div class="simulation-title">House Data Database</div>
+            <select id="house-selector" class="house-select" onchange="changeHouseSimulation()">
+                <!-- Populated dynamically -->
+            </select>
+            <div style="margin-top:4px;" class="simulation-title">Upload Custom CSV</div>
+            <div class="upload-btn-wrapper">
+                <button class="btn-upload"><i class="fa-solid fa-upload"></i> Upload CSV</button>
+                <input type="file" name="myfile" accept=".csv" onchange="uploadCSVFile(this)" />
+            </div>
+            <div id="upload-status" style="font-size:10px; color:var(--text-muted); text-align:center;"></div>
+        </div>
+    </div>
+
+    <!-- Main Workspace Section -->
+    <div class="main-content">
+        <div class="topbar">
+            <div class="system-title">
+                <h2>Predictive Maintenance Dashboard</h2>
+                <p>AI-driven early hardware degradation forecasting</p>
+            </div>
+            <div class="system-status-indicator">
+                <div class="sys-indicator" id="system-indicator"></div>
+                <span id="system-status-text" style="font-size:12px; font-weight:600; color:var(--success);">System State: Operational</span>
+            </div>
+        </div>
+
+        <!-- Real-Time Maintenance Alert Window (Module 3/11) -->
+        <div class="alert-window nominal" id="dashboard-alert-window">
+            <div class="alert-window-header">
+                <h3><i class="fa-solid fa-bell animate-flicker"></i> Active Maintenance Alert Hub</h3>
+                <span class="alert-count-badge" id="alert-count-badge">0 Alerts</span>
+            </div>
+            <div class="alert-list" id="dashboard-alert-list">
+                <!-- Dynamically populated real-time alerts -->
+            </div>
+        </div>
+
+        <!-- TAB: Overview -->
+        <div id="tab-overview" class="tab-content active">
+            <!-- KPI top cards -->
+            <div class="kpi-grid">
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Monitored Appliances</h3>
+                        <div class="value" id="kpi-appliances">9</div>
+                        <span id="kpi-appliances-sub">House 2 disaggregated</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-plug"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Evaluation Length</h3>
+                        <div class="value" id="kpi-weeks">20</div>
+                        <span id="kpi-weeks-sub">Graph snapshots</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-calendar-week"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Reconstruction Error</h3>
+                        <div class="value" id="kpi-delta">0.098</div>
+                        <span id="kpi-delta-sub">Week 1</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-chart-line"></i></div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-info">
+                        <h3>Remaining Useful Life</h3>
+                        <div class="value" id="kpi-rul">99 Days</div>
+                        <span id="kpi-rul-sub">Target Failure (Health < 50%)</span>
+                    </div>
+                    <div class="metric-icon"><i class="fa-solid fa-clock"></i></div>
+                </div>
+            </div>
+
+            <!-- Dashboard Timeline Slider -->
+            <div class="slider-bar">
+                <span style="font-size:12px; font-weight:700; width:80px;" id="playback-wk-lbl">Wk 1</span>
+                <input type="range" min="1" max="20" value="1" id="timeline-slider" oninput="handleSliderChange(this.value)">
+                <span style="font-size:12px; color:var(--text-muted); width:80px; text-align:right;">Wk 20 (Max)</span>
+            </div>
+
+            <!-- Double column layout for overview trends -->
+            <div class="grid-columns-2">
+                <div class="chart-box">
+                    <h2>
+                        <span><i class="fa-solid fa-wave-square" style="color:var(--primary);"></i> Reconstruction Error &amp; Graph Drift</span>
+                    </h2>
+                    <div class="chart-container">
+                        <canvas id="anomalyChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="chart-box">
+                    <h2>
+                        <span><i class="fa-solid fa-circle-nodes" style="color:var(--primary);"></i> Adjacency Network Mapping</span>
+                        <span id="graph-badge" class="badge-tag success" style="font-size:9px; padding:3px 6px; border-radius:3px;">Normal states</span>
+                    </h2>
+                    <div id="network-container" class="network-box"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Appliance Health Details -->
+        <div id="tab-all-appliances" class="tab-content">
+            <h2 style="font-family:var(--font-title); font-size:18px; margin-bottom:16px;">All Monitored Devices Health Metrics</h2>
+            <div class="appliance-grid" id="appliance-health-grid-body">
+                <!-- Dynamically populated health index cards -->
+            </div>
+        </div>
+
+        <!-- TAB: Graph Evolution -->
+        <div id="tab-graph-evolution" class="tab-content">
+            <div class="grid-columns-2" style="grid-template-columns: 1fr 1fr;">
+                <div class="chart-box">
+                    <h2><span><i class="fa-solid fa-project-diagram"></i> Topology Snapshots</span></h2>
+                    <div class="slider-bar" style="margin-bottom:10px;">
+                        <input type="range" min="1" max="20" value="1" id="evolution-slider" oninput="handleEvolutionSliderChange(this.value)" style="width:100%;">
+                    </div>
+                    <div id="evolution-network-container" class="network-box" style="height:320px;"></div>
+                </div>
+
+                <div class="chart-box">
+                    <h2 id="delta-wk-header"><span><i class="fa-solid fa-list"></i> Edge Weight Changes &amp; Drift Tracker</span></h2>
+                    <div class="table-wrapper" style="height:320px; overflow-y:auto;">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Link Path</th>
+                                    <th>Evolution Rule</th>
+                                    <th style="text-align:right;">Delta Value</th>
+                                </tr>
+                            </thead>
+                            <tbody id="delta-list-body">
+                                <!-- Populated dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB: Reports (Module 14) -->
+        <div id="tab-reports" class="tab-content">
+            <div class="chart-box">
+                <h2><span><i class="fa-solid fa-file-invoice"></i> Export &amp; Audit Exporters</span></h2>
+                <p style="font-size:12px; color:var(--text-muted); margin-bottom:20px;">
+                    Generate and download self-contained summary reports compiling the house health statistics, failure forecasting parameters, and repair logs.
+                </p>
+                <div class="report-section">
+                    <button class="btn-action" onclick="triggerReportExport('json')"><i class="fa-solid fa-file-json"></i> Export JSON Report</button>
+                    <button class="btn-action" onclick="triggerReportExport('html')"><i class="fa-solid fa-file-code"></i> Export HTML Report</button>
+                </div>
+                <div id="report-export-status" style="margin-top:12px; font-size:12px; font-weight:600; color:var(--success);"></div>
+            </div>
+        </div>
+
+        <footer>
+            <p>SMART Predictive Maintenance Platform • Graph Transformer &amp; Explainable AI (XAI) • 2026</p>
+        </footer>
+    </div>
+
+    <!-- Data Injection & State Engine -->
+    <script>
+        // Enriched report data injected by compiler
+        const enrichedReportData = __ENRICHED_REPORT_DATA__;
+
+        // Default local UI simulation variables
+        let selectedHouseId = 2; // Default starting with House 2
+        let currentWeek = 1;
+        let evolutionWeek = 1;
+        let activeTab = 'overview';
+
+        // UI instances
+        let anomalyChart = null;
+        let overviewNetwork = null;
+        let evolutionNetwork = null;
+        let comparisonChart = null;
+        let speedChart = null;
+
+        // Mock historical weeks data for House 2
+        const house2DeltaData = [
+            0.098, 0.102, 0.095, 0.105, 0.099, 0.101, 0.097, 0.103, 0.099, 0.100, 
+            0.102, 0.118, 0.134, 0.162, 0.191, 0.221, 0.258, 0.312, 0.384, 0.478
+        ];
+
+        // Normal connections for our disaggregated appliances
+        const normalEdges = [
+            { from: 1, to: 2, label: '0.18' }, // Frid - Kett
+            { from: 1, to: 3, label: '0.14' }, // Frid - Tele
+            { from: 3, to: 7, label: '0.11' }, // Tele - Lamp
+            { from: 4, to: 5, label: '0.22' }, // Dish - Micr
+            { from: 6, to: 7, label: '0.08' }, // Oven - Lamp
+            { from: 5, to: 8, label: '0.15' }, // Micr - Rout
+            { from: 2, to: 4, label: '0.09' }, // Kett - Dish
+            { from: 8, to: 7, label: '0.12' }, // Rout - Lamp
+            { from: 3, to: 4, label: '0.07' }  // Tele - Dish
+        ];
+
+        function getShortName(name) {
+            let n = name.replace(/_/g, ' ');
+            if (n.toLowerCase().includes('washing')) return 'Wash';
+            if (n.toLowerCase().includes('fridge')) return 'Frid';
+            if (n.toLowerCase().includes('freezer')) return 'Freez';
+            if (n.toLowerCase().includes('kettle')) return 'Kett';
+            if (n.toLowerCase().includes('television')) return 'TV';
+            if (n.toLowerCase().includes('dishwasher')) return 'Dish';
+            if (n.toLowerCase().includes('microwave')) return 'Micr';
+            if (n.toLowerCase().includes('tumble')) return 'Dryer';
+            if (n.toLowerCase().includes('computer')) return 'Comp';
+            return n.substring(0, 5);
+        }
+
+        // ============================================================
+        // GRAPH LOGIC — Robust implementation matching pipeline output
+        // ============================================================
+
+        // Minimum Jaccard similarity for an edge to be drawn (matches pm_pipeline.py threshold)
+        const EDGE_THRESHOLD = 0.05;
+
+        /**
+         * getEdgeWeight(i, j, week, hData)
+         * Returns the effective edge weight between node i and node j at playback week w.
+         *
+         * - Base weight: Jaccard co-activation similarity from mean_adjacency[0][i][j]
+         * - Self-loops (i === j) are always 0 — diagonal is meaningless for edges
+         * - If both i and j are in injected_nodes and week >= 12, we add progressive
+         *   drift: weight += factor * ((w-12)/8)^1.5
+         * - Below EDGE_THRESHOLD the edge is invisible (not drawn)
+         */
+        function getEdgeWeight(i, j, week, hData) {
+            // Self-loop guard — never draw self-edges
+            if (i === j) return { weight: 0.0, formula: 'Self-loop (ignored)' };
+
+            // Safely extract Jaccard weight (channel 0 of mean_adjacency)
+            let baseWeight = 0.0;
+            try {
+                if (hData.mean_adjacency && hData.mean_adjacency[0] &&
+                    hData.mean_adjacency[0][i] !== undefined &&
+                    hData.mean_adjacency[0][i][j] !== undefined) {
+                    baseWeight = hData.mean_adjacency[0][i][j];
+                }
+            } catch(e) {
+                baseWeight = 0.0;
+            }
+
+            // Use pre-computed isolated_nodes list if available; otherwise compute dynamically
+            const isoSet = new Set(hData.isolated_nodes || []);
+            const iIsolated = isoSet.has(i);
+            const jIsolated = isoSet.has(j);
+
+            // If either endpoint is isolated, no edge should exist at all
+            if (iIsolated || jIsolated) {
+                return { weight: 0.0, formula: 'Isolated node — no edge' };
+            }
+
+            const iDegraded = hData.injected_nodes && hData.injected_nodes.includes(i);
+            const jDegraded = hData.injected_nodes && hData.injected_nodes.includes(j);
+
+            // Progressive drift formula kicks in at week 12
+            if ((iDegraded || jDegraded) && week >= 12) {
+                const factor = (iDegraded && jDegraded) ? 0.20 : 0.12;
+                const t = Math.min(1.0, (week - 12) / 8);  // clamp to [0,1]
+                const drift = factor * Math.pow(t, 1.5);
+                const weight = Math.min(1.0, baseWeight + drift);
+                return {
+                    weight: weight,
+                    formula: `${baseWeight.toFixed(3)} + ${factor.toFixed(2)} × ((W-12)/8)^1.5`
+                };
+            }
+
+            return { weight: baseWeight, formula: `J(${i},${j}) = ${baseWeight.toFixed(3)}` };
+        }
+
+        /**
+         * buildGraphData(hData, week, R)
+         * Core shared helper: builds nodes[] and edges[] arrays for any house
+         * following this strict order:
+         *   1. Compute all edges from adjacency matrix (skip self-loops, apply threshold)
+         *   2. Track which node indices actually appear in edges → connectedInGraph
+         *   3. Build node objects — a node is RED only if:
+         *        (a) in injected_nodes AND (b) in connectedInGraph AND (c) week >= 12
+         *      An isolated node (no edges) is always drawn as neutral grey.
+         */
+        function buildGraphData(hData, week, R) {
+            const numNodes = hData.appliance_names.length;
+            const nodes = [];
+            const edges = [];
+
+            // ---- Step 1: Compute all valid edges ----
+            const connectedInGraph = new Set();
+
+            for (let i = 0; i < numNodes; i++) {
+                for (let j = i + 1; j < numNodes; j++) {
+                    const result = getEdgeWeight(i, j, week, hData);
+                    const wVal = result.weight;
+
+                    if (wVal < EDGE_THRESHOLD) continue;  // Below meaningful threshold
+
+                    connectedInGraph.add(i);
+                    connectedInGraph.add(j);
+
+                    const iDegraded = hData.injected_nodes && hData.injected_nodes.includes(i);
+                    const jDegraded = hData.injected_nodes && hData.injected_nodes.includes(j);
+                    const edgeDegraded = (iDegraded || jDegraded) && week >= 12;
+                    const edgeCritical = edgeDegraded && week >= 16;
+
+                    let edgeColor, edgeWidth;
+                    if (edgeCritical) {
+                        edgeColor = 'rgba(255, 92, 92, 0.6)';
+                        edgeWidth = Math.max(1.5, wVal * 14);
+                    } else if (edgeDegraded) {
+                        edgeColor = 'rgba(255, 159, 28, 0.5)';
+                        edgeWidth = Math.max(1.0, wVal * 10);
+                    } else {
+                        edgeColor = 'rgba(0, 255, 135, 0.14)';
+                        edgeWidth = Math.max(0.5, wVal * 7);
+                    }
+
+                    edges.push({
+                        from: i,
+                        to: j,
+                        width: edgeWidth,
+                        color: { color: edgeColor, highlight: edgeColor },
+                        label: `+${wVal.toFixed(3)}`,
+                        title: result.formula,
+                        font: {
+                            color: edgeCritical ? '#ff5c5c' : (edgeDegraded ? '#ff9f1c' : '#8596a9'),
+                            size: 6,
+                            face: 'Outfit',
+                            align: 'top',
+                            strokeWidth: 1,
+                            strokeColor: '#0c0f12'
+                        }
+                    });
+                }
+            }
+
+            // ---- Step 2: Build nodes with correct color logic ----
+            hData.appliance_names.forEach((name, idx) => {
+                const angle = (2 * Math.PI * idx) / numNodes;
+                const x = R * Math.cos(angle);
+                const y = R * Math.sin(angle);
+
+                const isInjected = hData.injected_nodes && hData.injected_nodes.includes(idx);
+                const hasEdges   = connectedInGraph.has(idx);
+                // Also check the precomputed isolated_nodes list from pipeline as secondary check
+                const isIsolated = hData.isolated_nodes && hData.isolated_nodes.includes(idx);
+
+                // RED only if: has fault injection + is part of the live graph + past week 12
+                const showDegraded = isInjected && hasEdges && !isIsolated && week >= 12;
+                const showCritical = showDegraded && week >= 16;
+
+                let colorBg, borderCol, nodeSize;
+
+                if (showCritical) {
+                    colorBg   = 'rgba(255, 92, 92, 0.3)';
+                    borderCol = '#ff5c5c';
+                    nodeSize  = 13;
+                } else if (showDegraded) {
+                    colorBg   = 'rgba(255, 159, 28, 0.2)';
+                    borderCol = '#ff9f1c';
+                    nodeSize  = 12;
+                } else if (!hasEdges) {
+                    // Fully isolated — visually distinct but clearly grey
+                    colorBg   = '#0f1318';
+                    borderCol = '#1e2530';
+                    nodeSize  = 8;
+                } else {
+                    colorBg   = '#13171c';
+                    borderCol = '#388bfd';
+                    nodeSize  = 10;
+                }
+
+                nodes.push({
+                    id: idx,
+                    label: getShortName(name),
+                    title: name + (isIsolated || !hasEdges ? ' (No co-activation)' : ''),
+                    x: x,
+                    y: y,
+                    physics: false,
+                    color: {
+                        background: colorBg,
+                        border: borderCol,
+                        highlight: { background: colorBg, border: '#ffffff' }
+                    },
+                    font: {
+                        color: (hasEdges && !isIsolated) ? '#ffffff' : '#4b5b6d',
+                        size: 9,
+                        face: 'Outfit',
+                        bold: showDegraded
+                    },
+                    shape: 'dot',
+                    size: nodeSize
+                });
+            });
+
+            return { nodes, edges };
+        }
+
+        function renderOverviewGraph(week) {
+            const container = document.getElementById('network-container');
+            const visOptions = {
+                interaction: { zoomView: false, dragView: false, hover: true, tooltipDelay: 100 },
+                physics: { enabled: false }
+            };
+
+            if (selectedHouseId === 2) {
+                // ---- House 2: Hard-coded appliance list with known drift targets ----
+                const appNodes = [
+                    { id: 0, label: 'Wash' }, { id: 1, label: 'Frid' }, { id: 2, label: 'Kett' },
+                    { id: 3, label: 'Tele' }, { id: 4, label: 'Dish' }, { id: 5, label: 'Micr' },
+                    { id: 6, label: 'Oven' }, { id: 7, label: 'Lamp' }, { id: 8, label: 'Rout' }
+                ];
+                const R = 75;
+                const nodes = [];
+                const edges = [];
+
+                appNodes.forEach((node, idx) => {
+                    const angle = (2 * Math.PI * idx) / appNodes.length;
+                    let colorBg = '#13171c', borderCol = '#388bfd', nodeSize = 10;
+                    if (node.label === 'Wash') {
+                        if (week >= 16) { colorBg = 'rgba(255,92,92,0.3)'; borderCol = '#ff5c5c'; nodeSize = 14; }
+                        else if (week >= 12) { colorBg = 'rgba(255,159,28,0.2)'; borderCol = '#ff9f1c'; nodeSize = 13; }
+                        else { colorBg = 'rgba(56,139,253,0.2)'; borderCol = '#388bfd'; }
+                    }
+                    nodes.push({
+                        id: node.id, label: node.label, x: R * Math.cos(angle), y: R * Math.sin(angle), physics: false,
+                        color: { background: colorBg, border: borderCol, highlight: { background: colorBg, border: '#fff' } },
+                        font: { color: '#fff', size: 10, face: 'Outfit', bold: node.label === 'Wash' && week >= 12 },
+                        shape: 'dot', size: nodeSize
+                    });
+                });
+
+                // Normal background edges
+                normalEdges.forEach(e => {
+                    edges.push({
+                        from: e.from, to: e.to, width: parseFloat(e.label) * 8,
+                        color: { color: 'rgba(0, 255, 135, 0.14)' }, label: e.label,
+                        font: { color: '#8596a9', size: 7, face: 'Outfit', align: 'top', strokeWidth: 1, strokeColor: '#0c0f12' }
+                    });
+                });
+
+                // Drift edges from Washer
+                const driftTargets = [
+                    { name: 'Washer ↔ Fridge',  to: 1, isNormal: week < 12 },
+                    { name: 'Washer ↔ Kettle',  to: 2, isNormal: week < 15 },
+                    { name: 'Washer ↔ TV',      to: 3, isNormal: week < 15 },
+                    { name: 'Washer ↔ Router',  to: 8, isNormal: week < 12 },
+                    { name: 'Washer ↔ Oven',    to: 6, isNormal: week < 12 }
+                ];
+                driftTargets.forEach(t => {
+                    const calc = getWashEdgeWeight(t.name, week);
+                    const wVal = calc.weight;
+                    if (wVal < 0.005) return;
+                    const isCrit = wVal > 0.10;
+                    edges.push({
+                        from: 0, to: t.to, width: t.isNormal ? 1.0 : Math.max(1.0, wVal * 20),
+                        color: { color: t.isNormal ? 'rgba(0,255,135,0.14)' : (isCrit ? 'rgba(255,92,92,0.7)' : 'rgba(255,159,28,0.5)') },
+                        label: `+${wVal.toFixed(3)}`,
+                        font: { color: t.isNormal ? '#8596a9' : (isCrit ? '#ff5c5c' : '#ff9f1c'), size: 7, face: 'Outfit', bold: !t.isNormal, align: 'top', strokeWidth: 1, strokeColor: '#0c0f12' }
+                    });
+                });
+
+                if (overviewNetwork !== null) overviewNetwork.destroy();
+                overviewNetwork = new vis.Network(container, { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, visOptions);
+
+            } else {
+                // ---- All other houses: use real adjacency data ----
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (!hData) { if (overviewNetwork !== null) { overviewNetwork.destroy(); overviewNetwork = null; } return; }
+
+                const { nodes, edges } = buildGraphData(hData, week, 75);
+                if (overviewNetwork !== null) overviewNetwork.destroy();
+                overviewNetwork = new vis.Network(container, { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, visOptions);
+            }
+        }
+
+        function renderEvolutionGraph(week) {
+            const container = document.getElementById('evolution-network-container');
+            const visOptions = {
+                interaction: { zoomView: false, dragView: false, hover: true, tooltipDelay: 100 },
+                physics: { enabled: false }
+            };
+
+            if (selectedHouseId === 2) {
+                // ---- House 2: fixed topology ----
+                const apps = ['Wash', 'Frid', 'Kett', 'Tele', 'Dish', 'Micr', 'Oven', 'Lamp', 'Rout'];
+                const R = 90;
+                const nodes = apps.map((name, idx) => {
+                    const isDeg = name === 'Wash' && week >= 12;
+                    const isCrit = name === 'Wash' && week >= 16;
+                    return {
+                        id: idx, label: name, x: R * Math.cos((2*Math.PI*idx)/apps.length), y: R * Math.sin((2*Math.PI*idx)/apps.length), physics: false,
+                        color: { background: isCrit ? 'rgba(255,92,92,0.3)' : (isDeg ? 'rgba(255,159,28,0.2)' : '#13171c'), border: isCrit ? '#ff5c5c' : (isDeg ? '#ff9f1c' : '#388bfd') },
+                        font: { color: '#fff', size: 11, face: 'Outfit', bold: isDeg }, shape: 'dot', size: isCrit ? 14 : (isDeg ? 13 : 10)
+                    };
+                });
+                const edges = normalEdges.map(e => ({
+                    from: e.from, to: e.to, width: parseFloat(e.label) * 8,
+                    color: { color: 'rgba(0, 255, 135, 0.14)' }, label: e.label
+                }));
+
+                if (evolutionNetwork !== null) evolutionNetwork.destroy();
+                evolutionNetwork = new vis.Network(container, { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, visOptions);
+
+            } else {
+                // ---- All other houses: real adjacency data ----
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (!hData) { if (evolutionNetwork !== null) { evolutionNetwork.destroy(); evolutionNetwork = null; } return; }
+
+                const { nodes, edges } = buildGraphData(hData, week, 90);
+                if (evolutionNetwork !== null) evolutionNetwork.destroy();
+                evolutionNetwork = new vis.Network(container, { nodes: new vis.DataSet(nodes), edges: new vis.DataSet(edges) }, visOptions);
+            }
+        }
+
+
+        function getWashEdgeWeight(edgeName, w) {
+            let weight = 0.0;
+            let formula = '';
+            if (edgeName === 'Washer ↔ Fridge') {
+                weight = w < 12 ? 0.01 : 0.01 + 0.20 * Math.pow((w - 12) / 8, 1.5);
+                formula = w < 12 ? '0.01 (baseline noise)' : '0.01 + 0.20 * ((W-12)/8)^1.5';
+            } else if (edgeName === 'Washer ↔ Kettle') {
+                weight = w < 15 ? 0.01 : 0.01 + 0.12 * ((w - 15) / 5);
+                formula = w < 15 ? '0.01 (baseline noise)' : '0.01 + 0.12 * ((W-15)/5)';
+            } else if (edgeName === 'Washer ↔ TV') {
+                weight = w < 15 ? 0.00 : 0.105 * ((w - 15) / 5);
+                formula = w < 15 ? '0.00 (uncorrelated)' : '0.105 * ((W-15)/5)';
+            } else if (edgeName === 'Washer ↔ Router') {
+                weight = w < 12 ? 0.01 : 0.01 + 0.07 * ((w - 12) / 8);
+                formula = w < 12 ? '0.01 (baseline noise)' : '0.01 + 0.07 * ((W-12)/8)';
+            } else if (edgeName === 'Washer ↔ Oven') {
+                weight = w < 12 ? 0.01 : 0.01 + 0.05 * ((w - 12) / 8);
+                formula = w < 12 ? '0.01 (baseline noise)' : '0.01 + 0.05 * ((W-12)/8)';
+            }
+            return { weight, formula };
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            populateHouseSelector();
+            switchTab('overview');
+            renderDashboard();
+        });
+
+        function switchTab(tabId) {
+            activeTab = tabId;
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+
+            const targetContent = document.getElementById(`tab-${tabId}`);
+            if (targetContent) targetContent.classList.add('active');
+
+            const navButtons = Array.from(document.querySelectorAll('.nav-item'));
+            const matchingBtn = navButtons.find(btn => btn.getAttribute('onclick').includes(tabId));
+            if (matchingBtn) matchingBtn.classList.add('active');
+
+            if (tabId === 'overview') {
+                setTimeout(() => { renderOverviewGraph(currentWeek); }, 100);
+            } else if (tabId === 'graph-evolution') {
+                setTimeout(() => { renderEvolutionGraph(evolutionWeek); }, 100);
+            } else if (tabId === 'all-appliances') {
+                renderApplianceHealthList();
+            }
+        }
+
+        function populateHouseSelector() {
+            const selector = document.getElementById('house-selector');
+            selector.innerHTML = '';
+            enrichedReportData.forEach(h => {
+                const opt = document.createElement('option');
+                opt.value = h.house_id;
+                opt.innerText = `House ${h.house_id} Database`;
+                if (h.house_id === selectedHouseId) opt.selected = true;
+                selector.appendChild(opt);
+            });
+        }
+
+        function changeHouseSimulation() {
+            const selector = document.getElementById('house-selector');
+            selectedHouseId = parseInt(selector.value);
+            renderDashboard();
+            renderEvolutionGraph(evolutionWeek);
+        }
+
+        function uploadCSVFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const statusLbl = document.getElementById('upload-status');
+            statusLbl.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Processing early fault model...';
+            
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/predict', { method: 'POST', body: formData })
+            .then(res => {
+                if (!res.ok) return res.json().then(j => { throw new Error(j.error); });
+                return res.json();
+            })
+            .then(data => {
+                statusLbl.innerHTML = '<span style="color:var(--success)"><i class="fa-solid fa-circle-check"></i> Diagnostic successful!</span>';
+                const index = enrichedReportData.findIndex(h => h.house_id === data.house_id);
+                if (index !== -1) enrichedReportData[index] = data;
+                else enrichedReportData.push(data);
+                
+                populateHouseSelector();
+                selectedHouseId = data.house_id;
+                document.getElementById('house-selector').value = selectedHouseId;
+                renderDashboard();
+            })
+            .catch(err => {
+                statusLbl.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark"></i> Error: ${err.message}</span>`;
+            });
+        }
+
+        function renderDashboard() {
+            updateKPIs();
+            renderAnomalyChart();
+            renderOverviewGraph(currentWeek);
+            renderEdgeDeltaList(currentWeek);
+            renderApplianceHealthList();
+            updateAlertWindow();
+        }
+
+        function updateKPIs() {
+            const ind = document.getElementById('system-indicator');
+            const stateTxt = document.getElementById('system-status-text');
+            const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+
+            if (selectedHouseId === 2) {
+                const currentDelta = house2DeltaData[currentWeek - 1];
+                document.getElementById('kpi-appliances').innerText = '9';
+                document.getElementById('kpi-appliances-sub').innerText = 'House 2 - REFIT';
+                document.getElementById('kpi-weeks').innerText = '20';
+                document.getElementById('kpi-delta').innerText = currentDelta.toFixed(3);
+                document.getElementById('kpi-delta-sub').innerText = `Week ${currentWeek}`;
+                
+                // Calculate simulated health
+                let health = 100 - (currentDelta / 0.45) * 50;
+                health = Math.max(0, Math.min(100, Math.round(health)));
+                
+                let rul_days = Math.max(0, Math.round(90 - currentWeek * 4.5));
+                document.getElementById('kpi-rul').innerText = `${rul_days} Days`;
+
+                if (currentWeek >= 16) {
+                    ind.className = 'sys-indicator warning';
+                    stateTxt.innerText = 'System State: Urgent Maintenance Alert';
+                    stateTxt.style.color = 'var(--danger)';
+                } else if (currentWeek >= 12) {
+                    ind.className = 'sys-indicator warning';
+                    stateTxt.innerText = 'System State: Minor Anomaly Drift';
+                    stateTxt.style.color = 'var(--warning)';
+                } else {
+                    ind.className = 'sys-indicator';
+                    stateTxt.innerText = 'System State: Operational';
+                    stateTxt.style.color = 'var(--success)';
+                }
+            } else if (hData) {
+                const numNodes = hData.appliance_names.length;
+                const avgDrift = (hData.drift_ratios.reduce((a,b)=>a+b, 0)/numNodes).toFixed(2);
+                
+                document.getElementById('kpi-appliances').innerText = numNodes;
+                document.getElementById('kpi-appliances-sub').innerText = `House ${selectedHouseId} - REFIT`;
+                document.getElementById('kpi-weeks').innerText = '1';
+                document.getElementById('kpi-delta').innerText = avgDrift;
+                document.getElementById('kpi-delta-sub').innerText = 'Window 1';
+                
+                // Fetch minimum RUL predicted from appliances health list
+                let min_rul = 90;
+                if (hData.appliances) {
+                    min_rul = Math.min(...hData.appliances.map(a => a.rul));
+                }
+                document.getElementById('kpi-rul').innerText = `${min_rul} Days`;
+
+                if (avgDrift > 1.25) {
+                    ind.className = 'sys-indicator critical';
+                    stateTxt.innerText = 'System State: Critical Failure Mode';
+                    stateTxt.style.color = 'var(--danger)';
+                } else {
+                    ind.className = 'sys-indicator';
+                    stateTxt.innerText = 'System State: Operational';
+                    stateTxt.style.color = 'var(--success)';
+                }
+            }
+        }
+
+        function renderAnomalyChart() {
+            const ctx = document.getElementById('anomalyChart').getContext('2d');
+            const labels = Array.from({length: 20}, (_, i) => `Wk ${i + 1}`);
+
+            let lineData = [];
+            if (selectedHouseId === 2) {
+                lineData = house2DeltaData;
+            } else {
+                const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+                if (hData) {
+                    const maxRatio = hData.drift_ratios.length > 0 ? Math.max(...hData.drift_ratios) : 1.0;
+                    const hasInjected = hData.injected_nodes && hData.injected_nodes.length > 0;
+                    
+                    lineData = Array.from({length: 20}, (_, i) => {
+                        const baseNoise = 0.08 + Math.sin(i * 1.5) * 0.004;
+                        if (!hasInjected) return baseNoise;
+                        if (i < 11) return baseNoise;
+                        const scale = Math.max(0.05, (maxRatio - 0.95) * 2.5);
+                        const t = (i - 11) / 8;
+                        return baseNoise + scale * Math.pow(t, 1.5);
+                    });
+                } else {
+                    lineData = Array.from({length: 20}, (_, i) => 0.08 + Math.sin(i) * 0.005);
+                }
+            }
+
+            if (anomalyChart !== null) anomalyChart.destroy();
+
+            anomalyChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Spatiotemporal Graph Drift',
+                            data: lineData,
+                            borderColor: '#388bfd',
+                            backgroundColor: 'rgba(56, 139, 253, 0.04)',
+                            borderWidth: 2,
+                            pointRadius: 4,
+                            tension: 0.3,
+                            fill: true
+                        },
+                        {
+                            label: 'Warning Threshold',
+                            data: Array(20).fill(0.20),
+                            borderColor: '#ff9f1c',
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            borderWidth: 1.5,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#8596a9', font: { size: 9 } } }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#8596a9', font: { size: 8 } }, grid: { color: '#232c37' } },
+                        y: { ticks: { color: '#8596a9', font: { size: 8 } }, grid: { color: '#232c37' } }
+                    }
+                }
+            });
+        }
+
+        function handleSliderChange(val) {
+            currentWeek = parseInt(val);
+            document.getElementById('playback-wk-lbl').innerText = `Wk ${val}`;
+            document.getElementById('timeline-slider').value = val;
+            
+            const graphBadge = document.getElementById('graph-badge');
+            if (currentWeek >= 12) {
+                graphBadge.className = 'badge-tag danger';
+                graphBadge.innerText = 'Fault drift';
+            } else {
+                graphBadge.className = 'badge-tag success';
+                graphBadge.innerText = 'Normal states';
+            }
+            
+            renderOverviewGraph(currentWeek);
+            renderEdgeDeltaList(currentWeek);
+            updateKPIs();
+            renderApplianceHealthList();
+            updateAlertWindow();
+        }
+
+        function handleEvolutionSliderChange(val) {
+            evolutionWeek = parseInt(val);
+            document.getElementById('evolution-slider').value = val;
+            renderEvolutionGraph(evolutionWeek);
+            renderEdgeDeltaList(evolutionWeek);
+        }
+
+        function renderEdgeDeltaList(week) {
+            const tbody = document.getElementById('delta-list-body');
+            tbody.innerHTML = '';
+            let edgesToRender = [];
+
+            if (selectedHouseId === 2) {
+                edgesToRender = [
+                    { name: 'Washer ↔ Fridge', isNormal: week < 12 },
+                    { name: 'Washer ↔ Kettle', isNormal: week < 15 },
+                    { name: 'Washer ↔ TV', isNormal: week < 15 }
+                ];
+            }
+
+            edgesToRender.forEach(row => {
+                const calc = getWashEdgeWeight(row.name, week);
+                const wVal = calc.weight;
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color:#fff;">${row.name}</td>
+                    <td style="color:var(--text-muted); font-family:monospace;">${calc.formula}</td>
+                    <td style="text-align:right;" class="${row.isNormal ? 'text-success' : 'text-warning'}">+${wVal.toFixed(3)}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // Appliance Health Grid Population (Module 7)
+        function renderApplianceHealthList() {
+            const container = document.getElementById('appliance-health-grid-body');
+            container.innerHTML = '';
+
+            let allAppliances = [];
+
+            // Compile from all available houses in enrichedReportData
+            enrichedReportData.forEach(hData => {
+                if (hData.appliances) {
+                    hData.appliances.forEach(app => {
+                        allAppliances.push({
+                            ...app,
+                            house_id: hData.house_id
+                        });
+                    });
+                }
+            });
+
+            // Include House 2 mock data if House 2 is not present in enrichedReportData
+            if (!enrichedReportData.some(h => h.house_id === 2)) {
+                const mockHouse2 = [
+                    { name: 'Washing Machine', icon: 'fa-soap', health: Math.max(25, 100 - currentWeek * 4), severity: currentWeek >= 16 ? 'Critical' : (currentWeek >= 12 ? 'Minor' : 'Healthy'), confidence: 0.95, rul: Math.max(5, 75 - currentWeek * 3), root_cause: currentWeek >= 12 ? 'Bearing degradation' : 'Normal Operation', recommendations: currentWeek >= 12 ? ["Inspect motor bearings", "Check drum suspension"] : ["Routine maintenance"], house_id: 2 },
+                    { name: 'Fridge-Freezer', icon: 'fa-snowflake', health: 96, severity: 'Healthy', confidence: 0.95, rul: 90, root_cause: 'Normal Operation', recommendations: ["Clean condenser coils"], house_id: 2 },
+                    { name: 'Kettle', icon: 'fa-mug-hot', health: 98, severity: 'Healthy', confidence: 0.95, rul: 90, root_cause: 'Normal Operation', recommendations: ["Clean scale accumulation"], house_id: 2 }
+                ];
+                allAppliances.push(...mockHouse2);
+            }
+
+            // Filter to show ONLY the selected house's appliances
+            let filteredAppliances = allAppliances.filter(app => app.house_id === selectedHouseId);
+
+            if (filteredAppliances.length === 0) return;
+
+            filteredAppliances.forEach(app => {
+                const card = document.createElement('div');
+                card.className = 'health-card';
+                
+                const sev = app.severity.toLowerCase();
+                const badgeClass = sev === 'critical' || sev === 'alert (fault)' ? 'danger' : (sev === 'minor' || sev === 'moderate' ? 'warning' : 'success');
+                
+                let recsHtml = "";
+                if (app.recommendations) {
+                    recsHtml = `<div class="recs-container"><strong>Recs:</strong> ${app.recommendations.join(', ')}</div>`;
+                }
+
+                card.innerHTML = `
+                    <div class="health-card-header">
+                        <div class="health-card-title">
+                            <i class="fa-solid ${app.icon || 'fa-plug'}"></i>
+                            <div>
+                                <h4>${app.name}</h4>
+                                <span style="font-size:10px; color:var(--primary); font-family:monospace; display:block; margin-top:2px;">House ${app.house_id}</span>
+                            </div>
+                        </div>
+                        <span class="health-badge ${badgeClass}">${app.severity}</span>
+                    </div>
+                    <div class="health-radial-section">
+                        <span class="health-radial-label">Component Health</span>
+                        <span class="health-radial-val ${badgeClass}">${app.health}%</span>
+                    </div>
+                    <div class="health-stats">
+                        <div>RUL: <strong>${app.rul} Days</strong></div>
+                        <div>Conf: <strong>${Math.round(app.confidence * 100)}%</strong></div>
+                    </div>
+                    <div style="font-size:11px; margin-top:8px; color:var(--text-muted);">
+                        Cause: <strong style="color:#fff;">${app.root_cause}</strong>
+                    </div>
+                    ${recsHtml}
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        // Live Maintenance Alert System Update
+        function updateAlertWindow() {
+            const alertWindow = document.getElementById('dashboard-alert-window');
+            const alertList = document.getElementById('dashboard-alert-list');
+            const countBadge = document.getElementById('alert-count-badge');
+            
+            if (!alertWindow || !alertList) return;
+            
+            alertList.innerHTML = '';
+            
+            // Get all appliances for current selected house
+            const hData = enrichedReportData.find(h => h.house_id === selectedHouseId);
+            let appliances = hData ? hData.appliances : null;
+            
+            if (!appliances && selectedHouseId === 2) {
+                // Mock fallback for House 2
+                appliances = [
+                    { name: 'Washing Machine', icon: 'fa-soap', health: Math.max(25, 100 - currentWeek * 4), severity: currentWeek >= 16 ? 'Critical' : (currentWeek >= 12 ? 'Minor' : 'Healthy'), confidence: 0.95, rul: Math.max(5, 75 - currentWeek * 3), root_cause: currentWeek >= 12 ? 'Bearing degradation' : 'Normal Operation', recommendations: currentWeek >= 12 ? ["Inspect motor bearings", "Check drum suspension"] : ["Routine maintenance"] },
+                    { name: 'Fridge-Freezer', icon: 'fa-snowflake', health: 96, severity: 'Healthy', confidence: 0.95, rul: 90, root_cause: 'Normal Operation', recommendations: ["Clean condenser coils"] },
+                    { name: 'Kettle', icon: 'fa-mug-hot', health: 98, severity: 'Healthy', confidence: 0.95, rul: 90, root_cause: 'Normal Operation', recommendations: ["Clean scale accumulation"] }
+                ];
+            }
+            
+            if (!appliances) {
+                alertWindow.className = 'alert-window nominal';
+                countBadge.innerText = '0 Alerts';
+                alertList.innerHTML = '<div style="color:var(--text-muted); font-size:12px; padding: 4px 8px;">No house data available.</div>';
+                return;
+            }
+            
+            // Filter appliances with warnings/failures
+            const activeAlerts = appliances.filter(app => app.severity.toLowerCase() !== 'healthy');
+            
+            if (activeAlerts.length === 0) {
+                alertWindow.className = 'alert-window nominal';
+                countBadge.innerText = '0 Alerts';
+                alertList.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:8px; color:#00ff87; font-size:12px; padding:4px 8px;">
+                        <i class="fa-solid fa-circle-check"></i>
+                        <span>All monitored appliances are operating within healthy parameters. No active faults detected.</span>
+                    </div>
+                `;
+            } else {
+                alertWindow.className = 'alert-window';
+                countBadge.innerText = `${activeAlerts.length} Active Alerts`;
+                
+                activeAlerts.forEach(app => {
+                    const item = document.createElement('div');
+                    const sev = app.severity.toLowerCase();
+                    const isCritical = sev === 'critical' || sev === 'alert (fault)';
+                    item.className = `alert-item ${isCritical ? 'critical' : 'warning'}`;
+                    
+                    const iconClass = isCritical ? 'fa-triangle-exclamation' : 'fa-circle-exclamation';
+                    
+                    item.innerHTML = `
+                        <div class="alert-item-left">
+                            <i class="fa-solid ${iconClass}"></i>
+                            <div class="alert-item-details">
+                                <h4 style="color:#fff;">${app.name} - ${app.severity} Anomaly Alert</h4>
+                                <p>Root Cause: <strong>${app.root_cause}</strong> | Recs: ${app.recommendations ? app.recommendations.join(', ') : 'Inspect device'}</p>
+                            </div>
+                        </div>
+                        <div class="alert-item-action">
+                            <span class="${isCritical ? 'text-danger' : 'text-warning'}">Health: ${app.health}%</span>
+                            <p>Est. RUL: ${app.rul} Days</p>
+                        </div>
+                    `;
+                    alertList.appendChild(item);
+                });
+            }
+        }
+
+        // Trigger PDF/HTML report exports (Module 14)
+        function triggerReportExport(format) {
+            const status = document.getElementById('report-export-status');
+            status.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating report file...';
+            
+            fetch(`/export-report?format=${format}&house_id=${selectedHouseId}`)
+            .then(res => {
+                if (!res.ok) throw new Error(`HTTP error ${res.status}`);
+                return res.json();
+            })
+            .then(data => {
+                status.innerHTML = `<span style="color:var(--success)"><i class="fa-solid fa-check-circle"></i> Exported: <a href="file:///${data.path.replace(/\\/g, '/')}" target="_blank" style="color:var(--primary);">${data.filename}</a></span>`;
+            })
+            .catch(err => {
+                status.innerHTML = `<span style="color:var(--danger)"><i class="fa-solid fa-circle-xmark"></i> Failed: ${err.message}</span>`;
+            });
+        }
+    </script>
+</body>
+</html>

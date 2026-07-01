@@ -1,0 +1,10 @@
+Appliance,Active Percentage (%),Mean Power Active (W),Threshold_W
+Television_Site,49.1486,118.79,10.0
+Unknown,43.0711,896.46,10.0
+Washing_Machine,32.6776,615.52,20.0
+Dishwasher,65.5901,79.47,20.0
+Tumble_Dryer,10.5109,1080.63,20.0
+Television_Site_1,5.4022,2148.96,10.0
+Computer_Site,17.9977,14.29,10.0
+Microwave,0.0,0.0,100.0
+Kettle,0.0,0.0,1000.0

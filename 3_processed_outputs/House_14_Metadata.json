@@ -1,0 +1,31 @@
+{
+    "House": 14,
+    "SourceFile": "CLEAN_House14.csv",
+    "TotalRawRows": 3000,
+    "ProcessedRows": 3271,
+    "StartTime": "2014-04-01 00:00:00",
+    "EndTime": "2014-04-01 07:16:00",
+    "SamplingFrequency": "8s",
+    "Mappings": {
+        "Appliance1": "Appliance1",
+        "Appliance2": "Appliance2",
+        "Appliance3": "Appliance3",
+        "Appliance4": "Appliance4",
+        "Appliance5": "Appliance5",
+        "Appliance6": "Appliance6",
+        "Appliance7": "Appliance7",
+        "Appliance8": "Appliance8",
+        "Appliance9": "Appliance9"
+    },
+    "Thresholds": {
+        "Appliance1": 10.0,
+        "Appliance2": 10.0,
+        "Appliance3": 10.0,
+        "Appliance4": 10.0,
+        "Appliance5": 10.0,
+        "Appliance6": 10.0,
+        "Appliance7": 10.0,
+        "Appliance8": 10.0,
+        "Appliance9": 10.0
+    }
+}

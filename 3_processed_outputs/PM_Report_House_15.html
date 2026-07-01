@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Predictive Maintenance Audit Report - House 15</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-base: #f9fbfd;
+            --bg-card: #ffffff;
+            --border-color: #e3e8ee;
+            --text-main: #333c48;
+            --text-muted: #6b7c93;
+            --primary: #388bfd;
+            --success: #24b47e;
+            --warning: #ff9f1c;
+            --danger: #ff5c5c;
+            --critical: #d12424;
+        }
+        body {
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.04);
+            padding: 40px;
+        }
+        header {
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 24px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 26px;
+            margin: 0;
+            color: #1a202c;
+        }
+        header p {
+            margin: 4px 0 0 0;
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+        .meta-stamp {
+            text-align: right;
+            font-size: 12px;
+            color: var(--text-muted);
+            font-family: monospace;
+        }
+        .kpi-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .kpi-card {
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            background: #fafcfd;
+        }
+        .kpi-card h3 {
+            margin: 0 0 8px 0;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text-muted);
+        }
+        .kpi-card .value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #1a202c;
+            font-family: 'Outfit', sans-serif;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 13px;
+        }
+        th {
+            background-color: #fafcfd;
+            font-weight: 600;
+            color: #1a202c;
+        }
+        .font-bold { font-weight: 600; }
+        .font-mono { font-family: monospace; }
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        .badge-healthy { background-color: #e2f5ec; color: var(--success); }
+        .badge-minor { background-color: #fff4e5; color: var(--warning); }
+        .badge-moderate { background-color: #fff4e5; color: var(--warning); }
+        .badge-critical { background-color: #ffebeb; color: var(--danger); }
+        
+        .progress-bar-container {
+            position: relative;
+            background: #e9ecef;
+            border-radius: 4px;
+            height: 18px;
+            overflow: hidden;
+            width: 120px;
+        }
+        .progress-bar-fill {
+            background: var(--success);
+            height: 100%;
+        }
+        .progress-bar-text {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 9px;
+            font-weight: 700;
+            color: #333;
+        }
+        .recs-list {
+            margin: 0;
+            padding-left: 16px;
+            font-size: 11px;
+            color: #4a5568;
+        }
+        .cause-text {
+            font-size: 12px;
+            color: #2d3748;
+            font-weight: 500;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 11px;
+            color: var(--text-muted);
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div>
+                <h1>Predictive Maintenance Audit Report</h1>
+                <p>Spatiotemporal Graph Learning &amp; AI-Driven Failure Forecasting</p>
+            </div>
+            <div class="meta-stamp">
+                Generated: 2026-07-01 11:46:27<br>
+                Source: House 15 Database
+            </div>
+        </header>
+        
+        <div class="kpi-row">
+            <div class="kpi-card">
+                <h3>Target Household</h3>
+                <div class="value">House 15</div>
+            </div>
+            <div class="kpi-card">
+                <h3>Monitored Appliances</h3>
+                <div class="value">9</div>
+            </div>
+            <div class="kpi-card">
+                <h3>System Status</h3>
+                <div class="value" style="color: var(--danger)">
+                    Alert (Failing)
+                </div>
+            </div>
+            <div class="kpi-card">
+                <h3>Graph Drift Score</h3>
+                <div class="value">0.0327</div>
+            </div>
+        </div>
+        
+        <h2>Appliance Health &amp; Failure Analysis</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Appliance</th>
+                    <th>Health Index</th>
+                    <th>Severity Status</th>
+                    <th>Model Confidence</th>
+                    <th>Est. Useful Life</th>
+                    <th>Probable Cause</th>
+                    <th>Actionable Recommendations</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+        <tr class="severity-minor">
+            <td class="font-bold">Computer_Site</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 56.58648787152051%"></div>
+                    <span class="progress-bar-text">56.58648787152051%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-minor">Minor</span></td>
+            <td>72%</td>
+            <td class="font-mono font-bold">111 Days</td>
+            <td class="cause-text">Internal component thermal drift</td>
+            <td>
+                <ul class="recs-list">
+                    <li>Perform general physical inspection.</li><li>Check for standard utility connection tightness.</li><li>Update control firmware if applicable.</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-moderate">
+            <td class="font-bold">Dishwasher</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 51.88760396112136%"></div>
+                    <span class="progress-bar-text">51.88760396112136%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-moderate">Moderate</span></td>
+            <td>92%</td>
+            <td class="font-mono font-bold">90 Days</td>
+            <td class="cause-text">Bearing wear & Mechanical friction</td>
+            <td>
+                <ul class="recs-list">
+                    <li>Inspect motor and drum bearing assemblies for noise.</li><li>Lubricate rotating bearings if serviceable.</li><li>Check belt tension and alignment.</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-critical">
+            <td class="font-bold">Fridge_Freezer</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 40.10192742773492%"></div>
+                    <span class="progress-bar-text">40.10192742773492%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-critical">Critical</span></td>
+            <td>94%</td>
+            <td class="font-mono font-bold">90 Days</td>
+            <td class="cause-text">Compressor efficiency loss & Door Gasket wear</td>
+            <td>
+                <ul class="recs-list">
+                    <li>Inspect and clean door gasket seals.</li><li>Replace magnetic door gasket strip if cracked.</li><li>Ensure unit is leveled so door closes firmly.</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-healthy">
+            <td class="font-bold">Kettle</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 57.81672024510442%"></div>
+                    <span class="progress-bar-text">57.81672024510442%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-healthy">Healthy</span></td>
+            <td>98%</td>
+            <td class="font-mono font-bold">45 Days</td>
+            <td class="cause-text">Normal Operation</td>
+            <td>
+                <ul class="recs-list">
+                    <li>General preventative maintenance check</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-healthy">
+            <td class="font-bold">Microwave</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 60.407301938449706%"></div>
+                    <span class="progress-bar-text">60.407301938449706%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-healthy">Healthy</span></td>
+            <td>98%</td>
+            <td class="font-mono font-bold">71 Days</td>
+            <td class="cause-text">Normal Operation</td>
+            <td>
+                <ul class="recs-list">
+                    <li>General preventative maintenance check</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-healthy">
+            <td class="font-bold">Television_Site</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 62.543612727378196%"></div>
+                    <span class="progress-bar-text">62.543612727378196%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-healthy">Healthy</span></td>
+            <td>98%</td>
+            <td class="font-mono font-bold">57 Days</td>
+            <td class="cause-text">Normal Operation</td>
+            <td>
+                <ul class="recs-list">
+                    <li>General preventative maintenance check</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-healthy">
+            <td class="font-bold">Toaster</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 54.9316980860317%"></div>
+                    <span class="progress-bar-text">54.9316980860317%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-healthy">Healthy</span></td>
+            <td>98%</td>
+            <td class="font-mono font-bold">21 Days</td>
+            <td class="cause-text">Normal Operation</td>
+            <td>
+                <ul class="recs-list">
+                    <li>General preventative maintenance check</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-moderate">
+            <td class="font-bold">Tumble_Dryer</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 39.13702190419129%"></div>
+                    <span class="progress-bar-text">39.13702190419129%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-moderate">Moderate</span></td>
+            <td>89%</td>
+            <td class="font-mono font-bold">90 Days</td>
+            <td class="cause-text">Motor windings overheat / Drum Imbalance</td>
+            <td>
+                <ul class="recs-list">
+                    <li>Re-level appliance feet to damp vibrations.</li><li>Check drum suspension springs and shock dampers.</li><li>Advise user to balance heavy laundry loads.</li>
+                </ul>
+            </td>
+        </tr>
+        
+        <tr class="severity-moderate">
+            <td class="font-bold">Washing_Machine</td>
+            <td>
+                <div class="progress-bar-container">
+                    <div class="progress-bar-fill" style="width: 38.65182616964128%"></div>
+                    <span class="progress-bar-text">38.65182616964128%</span>
+                </div>
+            </td>
+            <td><span class="badge badge-moderate">Moderate</span></td>
+            <td>89%</td>
+            <td class="font-mono font-bold">90 Days</td>
+            <td class="cause-text">Motor windings overheat / Drum Imbalance</td>
+            <td>
+                <ul class="recs-list">
+                    <li>Re-level appliance feet to damp vibrations.</li><li>Check drum suspension springs and shock dampers.</li><li>Advise user to balance heavy laundry loads.</li>
+                </ul>
+            </td>
+        </tr>
+        
+            </tbody>
+        </table>
+        
+        <footer>
+            <p>NILM Predictor Early Fault Detection System • Spatiotemporal Graph Transformer &amp; Research-Grade Diagnostics • 2026</p>
+        </footer>
+    </div>
+</body>
+</html>
