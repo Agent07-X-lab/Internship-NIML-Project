@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REFIT Pipeline Verification Report</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --container-bg: #151b2c;
+            --border-color: #232c45;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --primary: #58a6ff;
+            --primary-glow: rgba(88, 166, 255, 0.15);
+            --accent: #d2a8ff;
+            --accent-glow: rgba(210, 168, 255, 0.15);
+            --success: #39d353;
+            --success-glow: rgba(57, 211, 83, 0.15);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --gradient-1: linear-gradient(135deg, #58a6ff 0%, #d2a8ff 100%);
+            --gradient-btn: linear-gradient(135deg, #1f6feb 0%, #8e2de2 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            text-align: left;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            padding: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-subtext {
+            font-size: 0.8rem;
+            color: var(--success);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Dashboard Main Layout */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1200px) {
+            .dashboard-layout {
+                grid-template-columns: 3fr 2fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .panel-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Filter Controls */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input {
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Table Design */
+        .table-container {
+            overflow-x: auto;
+            max-height: 550px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #0d111e;
+            color: var(--text-main);
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        tr:hover td {
+            background-color: rgba(88, 166, 255, 0.05);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-house {
+            background-color: var(--primary-glow);
+            color: var(--primary);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+
+        .badge-threshold {
+            background-color: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(210, 168, 255, 0.3);
+        }
+
+        /* Progress Bar for Activity Pct */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #0b0f19;
+            border-radius: 4px;
+            flex-grow: 1;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff 0%, #d2a8ff 100%);
+            border-radius: 4px;
+        }
+
+        .progress-val {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-main);
+            width: 45px;
+            text-align: right;
+        }
+
+        /* Chart container */
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container-inner {
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Status summary section */
+        .status-footer {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="aegis_logo.png" alt="NILM Predictor Logo" class="header-logo">
+        <div>
+            <h1>Early Appliance Fault Detection Dashboard</h1>
+            <div class="subtitle">REFIT Smart Home Data Processing Pipeline Verification</div>
+        </div>
+    </header>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Houses Processed</div>
+            <div class="metric-value" id="m-houses">__TOTAL_HOUSES__</div>
+            <div class="metric-subtext">
+                <span class="status-indicator"></span> 100% complete
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Total Sub-meters</div>
+            <div class="metric-value" id="m-meters">__TOTAL_APPLIANCES__</div>
+            <div class="metric-subtext">
+                Mapped to real devices
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Avg Active Cycle</div>
+            <div class="metric-value" id="m-cycle">__AVG_ACTIVE_PCT__%</div>
+            <div class="metric-subtext">
+                Standardized 8s windows
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Temporal Alignment</div>
+            <div class="metric-value">8-second</div>
+            <div class="metric-subtext">
+                Linear Interpolation (max=5)
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- Left: Interactive Data Table -->
+        <div class="panel">
+            <div class="panel-title">
+                <span>Standardized Appliance State Matrix</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="row-count">Showing __TOTAL_APPLIANCES__ items</span>
+            </div>
+            
+            <div class="controls-row">
+                <div class="control-group">
+                    <label class="control-label" for="house-select">Filter by House</label>
+                    <select id="house-select" onchange="applyFilters()">
+                        <option value="all">All Houses</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="search-input">Search Appliance</label>
+                    <input type="text" id="search-input" placeholder="e.g. Fridge, Washing Machine..." oninput="applyFilters()">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="summary-table">
+                    <thead>
+                        <tr>
+                            <th>House</th>
+                            <th>Mapped Appliance</th>
+                            <th>Active Percentage (%)</th>
+                            <th>Mean Power Active (W)</th>
+                            <th>Threshold (W)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Filled dynamically by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right: Charts & Distribution Analysis -->
+        <div class="panel">
+            <div class="panel-title">Appliance Usage Distribution</div>
+            
+            <div class="chart-container-inner">
+                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);">Active Percentage (%) Comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="activePctChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container-inner">
+                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);">Active Power draw (W) Comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="activePowerChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-footer">
+        <div class="status-left">
+            <div class="status-indicator"></div>
+            <span>Data Pipeline Status: Operational & Verified</span>
+        </div>
+        <div>Report generated on: __TIMESTAMP__</div>
+    </div>
+
+    <script>
+        const rawData = __JSON_DATA__;
+        
+        // Populate house select options
+        const houses = [...new Set(rawData.map(r => r.House))].sort((a,b) => a - b);
+        const houseSelect = document.getElementById("house-select");
+        houses.forEach(h => {
+            const opt = document.createElement("option");
+            opt.value = h;
+            opt.textContent = "House " + h;
+            houseSelect.appendChild(opt);
+        });
+
+        let activeChart = null;
+        let powerChart = null;
+
+        function renderTable(data) {
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = "";
+            
+            data.forEach(row => {
+                const tr = document.createElement("tr");
+                
+                // House ID badge
+                const tdHouse = document.createElement("td");
+                tdHouse.innerHTML = `<span class="badge badge-house">House ${row.House}</span>`;
+                tr.appendChild(tdHouse);
+                
+                // Mapped appliance name
+                const tdApp = document.createElement("td");
+                tdApp.textContent = row.Appliance;
+                tdApp.style.fontWeight = "500";
+                tr.appendChild(tdApp);
+                
+                // Active percentage progress bar
+                const tdActive = document.createElement("td");
+                const roundedPct = parseFloat(row["Active Percentage (%)"]).toFixed(2);
+                tdActive.innerHTML = `
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${roundedPct}%"></div>
+                        </div>
+                        <span class="progress-val">${roundedPct}%</span>
+                    </div>
+                `;
+                tr.appendChild(tdActive);
+                
+                // Mean active power
+                const tdPower = document.createElement("td");
+                tdPower.textContent = parseFloat(row["Mean Power Active (W)"]).toFixed(1) + " W";
+                tdPower.style.fontFamily = "'Outfit', monospace";
+                tr.appendChild(tdPower);
+                
+                // Threshold badge
+                const tdThreshold = document.createElement("td");
+                tdThreshold.innerHTML = `<span class="badge badge-threshold">${row.Threshold_W} W</span>`;
+                tr.appendChild(tdThreshold);
+                
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("row-count").textContent = `Showing ${data.length} items`;
+        }
+
+        function renderCharts(data) {
+            // Destroy existing charts to avoid overlay
+            if (activeChart) activeChart.destroy();
+            if (powerChart) powerChart.destroy();
+
+            // Aggregating top 10 values for visual clarity if list is long
+            const sortedData = [...data].sort((a, b) => b["Active Percentage (%)"] - a["Active Percentage (%)"]).slice(0, 10);
+            
+            const labels = sortedData.map(r => `H${r.House}: ${r.Appliance}`);
+            const activePcts = sortedData.map(r => r["Active Percentage (%)"]);
+            const activePowers = sortedData.map(r => r["Mean Power Active (W)"]);
+
+            const ctx1 = document.getElementById('activePctChart').getContext('2d');
+            activeChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Active Percentage (%)',
+                        data: activePcts,
+                        backgroundColor: '#58a6ff',
+                        borderColor: '#1f6feb',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { padding: 10 }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#232c45' },
+                            ticks: { color: '#8b949e', font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8b949e', font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('activePowerChart').getContext('2d');
+            powerChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Mean Power Active (W)',
+                        data: activePowers,
+                        backgroundColor: '#d2a8ff',
+                        borderColor: '#8e2de2',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { padding: 10 }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#232c45' },
+                            ticks: { color: '#8b949e', font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8b949e', font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function applyFilters() {
+            const houseVal = document.getElementById("house-select").value;
+            const searchVal = document.getElementById("search-input").value.toLowerCase();
+
+            let filtered = rawData;
+            
+            if (houseVal !== "all") {
+                filtered = filtered.filter(r => r.House.toString() === houseVal);
+            }
+
+            if (searchVal) {
+                filtered = filtered.filter(r => r.Appliance.toLowerCase().includes(searchVal));
+            }
+
+            renderTable(filtered);
+            renderCharts(filtered);
+        }
+
+        // Initial load
+        window.addEventListener("DOMContentLoaded", () => {
+            applyFilters();
+        });
+    </script>
+</body>
+</html>

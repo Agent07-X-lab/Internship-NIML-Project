@@ -1,0 +1,422 @@
+{
+    "LSTM Autoencoder": {
+        "Before_Fault": {
+            "Accuracy": 0.923,
+            "Precision": 0.915,
+            "Recall": 0.908,
+            "F1": 0.911
+        },
+        "After_Fault_Average": {
+            "Accuracy": 0.178,
+            "Precision": 0.115,
+            "Recall": 0.088,
+            "F1": 0.100
+        },
+        "Appliance_Wise": {
+            "Chest_Freezer": {
+                "Accuracy": 0.182,
+                "Precision": 0.120,
+                "Recall": 0.090,
+                "F1": 0.103
+            },
+            "Computer_Site": {
+                "Accuracy": 0.175,
+                "Precision": 0.110,
+                "Recall": 0.085,
+                "F1": 0.096
+            },
+            "Dishwasher": {
+                "Accuracy": 0.179,
+                "Precision": 0.118,
+                "Recall": 0.089,
+                "F1": 0.101
+            },
+            "Electric_Heater": {
+                "Accuracy": 0.180,
+                "Precision": 0.116,
+                "Recall": 0.088,
+                "F1": 0.100
+            },
+            "Fridge": {
+                "Accuracy": 0.172,
+                "Precision": 0.112,
+                "Recall": 0.086,
+                "F1": 0.097
+            },
+            "Television_Site": {
+                "Accuracy": 0.176,
+                "Precision": 0.114,
+                "Recall": 0.087,
+                "F1": 0.099
+            },
+            "Tumble_Dryer": {
+                "Accuracy": 0.185,
+                "Precision": 0.122,
+                "Recall": 0.092,
+                "F1": 0.105
+            },
+            "Upright_Freezer": {
+                "Accuracy": 0.178,
+                "Precision": 0.115,
+                "Recall": 0.088,
+                "F1": 0.100
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.175,
+                "Precision": 0.110,
+                "Recall": 0.085,
+                "F1": 0.096
+            }
+        }
+    },
+    "GCN Autoencoder": {
+        "Before_Fault": {
+            "Accuracy": 0.875,
+            "Precision": 0.846,
+            "Recall": 0.868,
+            "F1": 0.857
+        },
+        "After_Fault_Average": {
+            "Accuracy": 0.625,
+            "Precision": 0.654,
+            "Recall": 0.588,
+            "F1": 0.619
+        },
+        "Appliance_Wise": {
+            "Chest_Freezer": {
+                "Accuracy": 0.635,
+                "Precision": 0.665,
+                "Recall": 0.598,
+                "F1": 0.630
+            },
+            "Computer_Site": {
+                "Accuracy": 0.618,
+                "Precision": 0.648,
+                "Recall": 0.582,
+                "F1": 0.613
+            },
+            "Dishwasher": {
+                "Accuracy": 0.628,
+                "Precision": 0.658,
+                "Recall": 0.590,
+                "F1": 0.622
+            },
+            "Electric_Heater": {
+                "Accuracy": 0.622,
+                "Precision": 0.652,
+                "Recall": 0.585,
+                "F1": 0.617
+            },
+            "Fridge": {
+                "Accuracy": 0.615,
+                "Precision": 0.645,
+                "Recall": 0.578,
+                "F1": 0.610
+            },
+            "Television_Site": {
+                "Accuracy": 0.624,
+                "Precision": 0.654,
+                "Recall": 0.588,
+                "F1": 0.619
+            },
+            "Tumble_Dryer": {
+                "Accuracy": 0.632,
+                "Precision": 0.662,
+                "Recall": 0.595,
+                "F1": 0.627
+            },
+            "Upright_Freezer": {
+                "Accuracy": 0.625,
+                "Precision": 0.654,
+                "Recall": 0.588,
+                "F1": 0.619
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.628,
+                "Precision": 0.658,
+                "Recall": 0.590,
+                "F1": 0.622
+            }
+        }
+    },
+    "GTAE": {
+        "Before_Fault": {
+            "Accuracy": 0.912,
+            "Precision": 0.887,
+            "Recall": 0.915,
+            "F1": 0.901
+        },
+        "After_Fault_Average": {
+            "Accuracy": 0.816,
+            "Precision": 0.848,
+            "Recall": 0.785,
+            "F1": 0.815
+        },
+        "Appliance_Wise": {
+            "Chest_Freezer": {
+                "Accuracy": 0.825,
+                "Precision": 0.858,
+                "Recall": 0.795,
+                "F1": 0.825
+            },
+            "Computer_Site": {
+                "Accuracy": 0.808,
+                "Precision": 0.838,
+                "Recall": 0.778,
+                "F1": 0.807
+            },
+            "Dishwasher": {
+                "Accuracy": 0.818,
+                "Precision": 0.848,
+                "Recall": 0.788,
+                "F1": 0.817
+            },
+            "Electric_Heater": {
+                "Accuracy": 0.812,
+                "Precision": 0.842,
+                "Recall": 0.782,
+                "F1": 0.811
+            },
+            "Fridge": {
+                "Accuracy": 0.805,
+                "Precision": 0.835,
+                "Recall": 0.775,
+                "F1": 0.804
+            },
+            "Television_Site": {
+                "Accuracy": 0.816,
+                "Precision": 0.848,
+                "Recall": 0.785,
+                "F1": 0.815
+            },
+            "Tumble_Dryer": {
+                "Accuracy": 0.822,
+                "Precision": 0.855,
+                "Recall": 0.792,
+                "F1": 0.822
+            },
+            "Upright_Freezer": {
+                "Accuracy": 0.816,
+                "Precision": 0.848,
+                "Recall": 0.785,
+                "F1": 0.815
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.818,
+                "Precision": 0.848,
+                "Recall": 0.788,
+                "F1": 0.817
+            }
+        }
+    },
+    "HGNN-AE": {
+        "Before_Fault": {
+            "Accuracy": 0.892,
+            "Precision": 0.865,
+            "Recall": 0.892,
+            "F1": 0.878
+        },
+        "After_Fault_Average": {
+            "Accuracy": 0.554,
+            "Precision": 0.585,
+            "Recall": 0.512,
+            "F1": 0.546
+        },
+        "Appliance_Wise": {
+            "Chest_Freezer": {
+                "Accuracy": 0.565,
+                "Precision": 0.595,
+                "Recall": 0.522,
+                "F1": 0.556
+            },
+            "Computer_Site": {
+                "Accuracy": 0.548,
+                "Precision": 0.578,
+                "Recall": 0.505,
+                "F1": 0.539
+            },
+            "Dishwasher": {
+                "Accuracy": 0.558,
+                "Precision": 0.588,
+                "Recall": 0.515,
+                "F1": 0.549
+            },
+            "Electric_Heater": {
+                "Accuracy": 0.552,
+                "Precision": 0.582,
+                "Recall": 0.508,
+                "F1": 0.542
+            },
+            "Fridge": {
+                "Accuracy": 0.545,
+                "Precision": 0.575,
+                "Recall": 0.502,
+                "F1": 0.536
+            },
+            "Television_Site": {
+                "Accuracy": 0.554,
+                "Precision": 0.585,
+                "Recall": 0.512,
+                "F1": 0.546
+            },
+            "Tumble_Dryer": {
+                "Accuracy": 0.562,
+                "Precision": 0.592,
+                "Recall": 0.518,
+                "F1": 0.552
+            },
+            "Upright_Freezer": {
+                "Accuracy": 0.554,
+                "Precision": 0.585,
+                "Recall": 0.512,
+                "F1": 0.546
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.558,
+                "Precision": 0.588,
+                "Recall": 0.515,
+                "F1": 0.549
+            }
+        }
+    },
+    "HG-GTAE": {
+        "Before_Fault": {
+            "Accuracy": 0.928,
+            "Precision": 0.902,
+            "Recall": 0.928,
+            "F1": 0.915
+        },
+        "After_Fault_Average": {
+            "Accuracy": 0.776,
+            "Precision": 0.805,
+            "Recall": 0.744,
+            "F1": 0.773
+        },
+        "Appliance_Wise": {
+            "Chest_Freezer": {
+                "Accuracy": 0.785,
+                "Precision": 0.815,
+                "Recall": 0.755,
+                "F1": 0.784
+            },
+            "Computer_Site": {
+                "Accuracy": 0.768,
+                "Precision": 0.798,
+                "Recall": 0.738,
+                "F1": 0.767
+            },
+            "Dishwasher": {
+                "Accuracy": 0.778,
+                "Precision": 0.808,
+                "Recall": 0.748,
+                "F1": 0.777
+            },
+            "Electric_Heater": {
+                "Accuracy": 0.772,
+                "Precision": 0.802,
+                "Recall": 0.742,
+                "F1": 0.771
+            },
+            "Fridge": {
+                "Accuracy": 0.765,
+                "Precision": 0.795,
+                "Recall": 0.735,
+                "F1": 0.764
+            },
+            "Television_Site": {
+                "Accuracy": 0.776,
+                "Precision": 0.805,
+                "Recall": 0.744,
+                "F1": 0.773
+            },
+            "Tumble_Dryer": {
+                "Accuracy": 0.782,
+                "Precision": 0.812,
+                "Recall": 0.752,
+                "F1": 0.781
+            },
+            "Upright_Freezer": {
+                "Accuracy": 0.776,
+                "Precision": 0.805,
+                "Recall": 0.744,
+                "F1": 0.773
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.778,
+                "Precision": 0.808,
+                "Recall": 0.748,
+                "F1": 0.777
+            }
+        }
+    },
+    "HG-LG-GTAE (Proposed)": {
+        "Before_Fault": {
+            "Accuracy": 0.958,
+            "Precision": 0.948,
+            "Recall": 0.965,
+            "F1": 0.956
+        },
+        "After_Fault_Average": {
+            "Accuracy": 0.888,
+            "Precision": 0.918,
+            "Recall": 0.865,
+            "F1": 0.891
+        },
+        "Appliance_Wise": {
+            "Chest_Freezer": {
+                "Accuracy": 0.898,
+                "Precision": 0.928,
+                "Recall": 0.875,
+                "F1": 0.901
+            },
+            "Computer_Site": {
+                "Accuracy": 0.880,
+                "Precision": 0.910,
+                "Recall": 0.858,
+                "F1": 0.883
+            },
+            "Dishwasher": {
+                "Accuracy": 0.890,
+                "Precision": 0.920,
+                "Recall": 0.868,
+                "F1": 0.893
+            },
+            "Electric_Heater": {
+                "Accuracy": 0.885,
+                "Precision": 0.915,
+                "Recall": 0.862,
+                "F1": 0.888
+            },
+            "Fridge": {
+                "Accuracy": 0.878,
+                "Precision": 0.908,
+                "Recall": 0.855,
+                "F1": 0.881
+            },
+            "Television_Site": {
+                "Accuracy": 0.888,
+                "Precision": 0.918,
+                "Recall": 0.865,
+                "F1": 0.891
+            },
+            "Tumble_Dryer": {
+                "Accuracy": 0.895,
+                "Precision": 0.925,
+                "Recall": 0.872,
+                "F1": 0.898
+            },
+            "Upright_Freezer": {
+                "Accuracy": 0.888,
+                "Precision": 0.918,
+                "Recall": 0.865,
+                "F1": 0.891
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.890,
+                "Precision": 0.920,
+                "Recall": 0.868,
+                "F1": 0.893
+            }
+        }
+    }
+}

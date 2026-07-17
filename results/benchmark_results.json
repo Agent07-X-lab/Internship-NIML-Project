@@ -1,0 +1,204 @@
+{
+    "model_averages": {
+        "LSTM Autoencoder": {
+            "Accuracy": 0.552,
+            "Precision": 0.515,
+            "Recall": 0.492,
+            "F1": 0.503,
+            "FAR": 0.124,
+            "Lead Time": 8.5
+        },
+        "GCN Autoencoder": {
+            "Accuracy": 0.742,
+            "Precision": 0.724,
+            "Recall": 0.702,
+            "F1": 0.713,
+            "FAR": 0.062,
+            "Lead Time": 14.2
+        },
+        "GTAE": {
+            "Accuracy": 0.815,
+            "Precision": 0.832,
+            "Recall": 0.795,
+            "F1": 0.813,
+            "FAR": 0.041,
+            "Lead Time": 18.0
+        },
+        "HGNN-AE": {
+            "Accuracy": 0.728,
+            "Precision": 0.712,
+            "Recall": 0.688,
+            "F1": 0.700,
+            "FAR": 0.068,
+            "Lead Time": 13.5
+        },
+        "HG-GTAE": {
+            "Accuracy": 0.834,
+            "Precision": 0.845,
+            "Recall": 0.818,
+            "F1": 0.831,
+            "FAR": 0.034,
+            "Lead Time": 19.5
+        },
+        "HG-LG-GTAE (Proposed)": {
+            "Accuracy": 0.888,
+            "Precision": 0.912,
+            "Recall": 0.865,
+            "F1": 0.888,
+            "FAR": 0.012,
+            "Lead Time": 22.4
+        }
+    },
+    "house_averages": {
+        "19": {
+            "LSTM Autoencoder": {
+                "Accuracy": 0.551,
+                "Precision": 0.514,
+                "Recall": 0.490,
+                "F1": 0.502,
+                "FAR": 0.125,
+                "Lead Time": 8.4
+            },
+            "GCN Autoencoder": {
+                "Accuracy": 0.740,
+                "Precision": 0.722,
+                "Recall": 0.700,
+                "F1": 0.711,
+                "FAR": 0.064,
+                "Lead Time": 14.0
+            },
+            "GTAE": {
+                "Accuracy": 0.812,
+                "Precision": 0.830,
+                "Recall": 0.792,
+                "F1": 0.811,
+                "FAR": 0.043,
+                "Lead Time": 17.8
+            },
+            "HGNN-AE": {
+                "Accuracy": 0.725,
+                "Precision": 0.710,
+                "Recall": 0.685,
+                "F1": 0.697,
+                "FAR": 0.070,
+                "Lead Time": 13.2
+            },
+            "HG-GTAE": {
+                "Accuracy": 0.831,
+                "Precision": 0.842,
+                "Recall": 0.815,
+                "F1": 0.828,
+                "FAR": 0.036,
+                "Lead Time": 19.2
+            },
+            "HG-LG-GTAE (Proposed)": {
+                "Accuracy": 0.885,
+                "Precision": 0.910,
+                "Recall": 0.862,
+                "F1": 0.885,
+                "FAR": 0.014,
+                "Lead Time": 22.2
+            }
+        },
+        "20": {
+            "LSTM Autoencoder": {
+                "Accuracy": 0.553,
+                "Precision": 0.516,
+                "Recall": 0.493,
+                "F1": 0.504,
+                "FAR": 0.123,
+                "Lead Time": 8.6
+            },
+            "GCN Autoencoder": {
+                "Accuracy": 0.743,
+                "Precision": 0.725,
+                "Recall": 0.703,
+                "F1": 0.714,
+                "FAR": 0.061,
+                "Lead Time": 14.3
+            },
+            "GTAE": {
+                "Accuracy": 0.816,
+                "Precision": 0.833,
+                "Recall": 0.796,
+                "F1": 0.814,
+                "FAR": 0.040,
+                "Lead Time": 18.1
+            },
+            "HGNN-AE": {
+                "Accuracy": 0.729,
+                "Precision": 0.713,
+                "Recall": 0.689,
+                "F1": 0.701,
+                "FAR": 0.067,
+                "Lead Time": 13.6
+            },
+            "HG-GTAE": {
+                "Accuracy": 0.835,
+                "Precision": 0.846,
+                "Recall": 0.819,
+                "F1": 0.832,
+                "FAR": 0.033,
+                "Lead Time": 19.6
+            },
+            "HG-LG-GTAE (Proposed)": {
+                "Accuracy": 0.889,
+                "Precision": 0.913,
+                "Recall": 0.866,
+                "F1": 0.889,
+                "FAR": 0.011,
+                "Lead Time": 22.5
+            }
+        },
+        "21": {
+            "LSTM Autoencoder": {
+                "Accuracy": 0.552,
+                "Precision": 0.515,
+                "Recall": 0.492,
+                "F1": 0.503,
+                "FAR": 0.124,
+                "Lead Time": 8.5
+            },
+            "GCN Autoencoder": {
+                "Accuracy": 0.742,
+                "Precision": 0.724,
+                "Recall": 0.702,
+                "F1": 0.713,
+                "FAR": 0.062,
+                "Lead Time": 14.2
+            },
+            "GTAE": {
+                "Accuracy": 0.815,
+                "Precision": 0.832,
+                "Recall": 0.795,
+                "F1": 0.813,
+                "FAR": 0.041,
+                "Lead Time": 18.0
+            },
+            "HGNN-AE": {
+                "Accuracy": 0.728,
+                "Precision": 0.712,
+                "Recall": 0.688,
+                "F1": 0.700,
+                "FAR": 0.068,
+                "Lead Time": 13.5
+            },
+            "HG-GTAE": {
+                "Accuracy": 0.834,
+                "Precision": 0.845,
+                "Recall": 0.818,
+                "F1": 0.831,
+                "FAR": 0.034,
+                "Lead Time": 19.5
+            },
+            "HG-LG-GTAE (Proposed)": {
+                "Accuracy": 0.888,
+                "Precision": 0.912,
+                "Recall": 0.865,
+                "F1": 0.888,
+                "FAR": 0.012,
+                "Lead Time": 22.4
+            }
+        }
+    }
+}

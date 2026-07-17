@@ -1,0 +1,31 @@
+{
+    "House": 10,
+    "SourceFile": "CLEAN_House10.csv",
+    "TotalRawRows": 3000,
+    "ProcessedRows": 3282,
+    "StartTime": "2014-04-01 00:00:00",
+    "EndTime": "2014-04-01 07:17:28",
+    "SamplingFrequency": "8s",
+    "Mappings": {
+        "Appliance1": "Magimix (Blender)",
+        "Appliance2": "Freezer",
+        "Appliance3": "Chest Freezer (In Garage)",
+        "Appliance4": "Fridge-Freezer",
+        "Appliance5": "Washing Machine",
+        "Appliance6": "Dishwasher",
+        "Appliance7": "Television Site",
+        "Appliance8": "Microwave",
+        "Appliance9": "Kenwood KMix"
+    },
+    "Thresholds": {
+        "Magimix_Blender": 10.0,
+        "Freezer": 15.0,
+        "Chest_Freezer_In_Garage": 15.0,
+        "Fridge_Freezer": 15.0,
+        "Washing_Machine": 20.0,
+        "Dishwasher": 20.0,
+        "Television_Site": 10.0,
+        "Microwave": 100.0,
+        "Kenwood_KMix": 10.0
+    }
+}

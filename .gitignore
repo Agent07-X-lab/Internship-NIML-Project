@@ -1,0 +1,53 @@
+# PyTorch/TensorFlow models and large artifacts
+*.pt
+*.pth
+*.pth.tar
+*.pt.tar
+*.ckpt
+
+# Processed and temporary files in outputs (keeping reports if desired, but ignoring heavy models and CSVs)
+3_processed_outputs/*.pt
+3_processed_outputs/*.pth
+3_processed_outputs/*.csv
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Environment variables
+.env
+.venv
+venv/
+ENV/
+env/
+
+# IDEs
+.vscode/
+.idea/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Logs
+*.log
+server.log

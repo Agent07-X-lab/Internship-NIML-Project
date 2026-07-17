@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REFIT Pipeline Verification Report</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        :root {
+            --bg-color: #0b0f19;
+            --container-bg: #151b2c;
+            --border-color: #232c45;
+            --text-main: #f0f6fc;
+            --text-muted: #8b949e;
+            --primary: #58a6ff;
+            --primary-glow: rgba(88, 166, 255, 0.15);
+            --accent: #d2a8ff;
+            --accent-glow: rgba(210, 168, 255, 0.15);
+            --success: #39d353;
+            --success-glow: rgba(57, 211, 83, 0.15);
+            --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --gradient-1: linear-gradient(135deg, #58a6ff 0%, #d2a8ff 100%);
+            --gradient-btn: linear-gradient(135deg, #1f6feb 0%, #8e2de2 100%);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.6;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            text-align: left;
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .header-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            border: 2px solid var(--border-color);
+            background: transparent;
+            padding: 0;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            flex-shrink: 0;
+            transition: transform 0.3s ease;
+        }
+
+        .header-logo:hover {
+            transform: scale(1.05);
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            bottom: -15px;
+            left: 0;
+            width: 100px;
+            height: 4px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+        }
+
+        h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+        }
+
+        .subtitle {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        /* Metrics grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .metric-card {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: var(--card-shadow);
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.3s ease, border-color 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary);
+        }
+
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .metric-label {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-family: 'Outfit', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 0.25rem;
+        }
+
+        .metric-subtext {
+            font-size: 0.8rem;
+            color: var(--success);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Dashboard Main Layout */
+        .dashboard-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 1200px) {
+            .dashboard-layout {
+                grid-template-columns: 3fr 2fr;
+            }
+        }
+
+        .panel {
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+        }
+
+        .panel-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem;
+        }
+
+        /* Filter Controls */
+        .controls-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        select, input {
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        select:focus, input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        /* Table Design */
+        .table-container {
+            overflow-x: auto;
+            max-height: 550px;
+            overflow-y: auto;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.9rem;
+        }
+
+        th {
+            background-color: #0d111e;
+            color: var(--text-main);
+            font-weight: 600;
+            padding: 0.85rem 1rem;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 0.85rem 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            vertical-align: middle;
+        }
+
+        tr:nth-child(even) td {
+            background-color: rgba(255, 255, 255, 0.01);
+        }
+
+        tr:hover td {
+            background-color: rgba(88, 166, 255, 0.05);
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-house {
+            background-color: var(--primary-glow);
+            color: var(--primary);
+            border: 1px solid rgba(88, 166, 255, 0.3);
+        }
+
+        .badge-threshold {
+            background-color: var(--accent-glow);
+            color: var(--accent);
+            border: 1px solid rgba(210, 168, 255, 0.3);
+        }
+
+        /* Progress Bar for Activity Pct */
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-width: 140px;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #0b0f19;
+            border-radius: 4px;
+            flex-grow: 1;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #58a6ff 0%, #d2a8ff 100%);
+            border-radius: 4px;
+        }
+
+        .progress-val {
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-main);
+            width: 45px;
+            text-align: right;
+        }
+
+        /* Chart container */
+        .chart-wrapper {
+            position: relative;
+            height: 280px;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-container-inner {
+            background-color: #0b0f19;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Status summary section */
+        .status-footer {
+            margin-top: 3rem;
+            padding: 1.5rem;
+            background-color: var(--container-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+        }
+
+        .status-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="aegis_logo.png" alt="NILM Predictor Logo" class="header-logo">
+        <div>
+            <h1>Early Appliance Fault Detection Dashboard</h1>
+            <div class="subtitle">REFIT Smart Home Data Processing Pipeline Verification</div>
+        </div>
+    </header>
+
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <div class="metric-label">Houses Processed</div>
+            <div class="metric-value" id="m-houses">21</div>
+            <div class="metric-subtext">
+                <span class="status-indicator"></span> 100% complete
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Total Sub-meters</div>
+            <div class="metric-value" id="m-meters">189</div>
+            <div class="metric-subtext">
+                Mapped to real devices
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Avg Active Cycle</div>
+            <div class="metric-value" id="m-cycle">24.62%</div>
+            <div class="metric-subtext">
+                Standardized 8s windows
+            </div>
+        </div>
+        <div class="metric-card">
+            <div class="metric-label">Temporal Alignment</div>
+            <div class="metric-value">8-second</div>
+            <div class="metric-subtext">
+                Linear Interpolation (max=5)
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-layout">
+        <!-- Left: Interactive Data Table -->
+        <div class="panel">
+            <div class="panel-title">
+                <span>Standardized Appliance State Matrix</span>
+                <span style="font-size: 0.8rem; color: var(--text-muted);" id="row-count">Showing 189 items</span>
+            </div>
+            
+            <div class="controls-row">
+                <div class="control-group">
+                    <label class="control-label" for="house-select">Filter by House</label>
+                    <select id="house-select" onchange="applyFilters()">
+                        <option value="all">All Houses</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label class="control-label" for="search-input">Search Appliance</label>
+                    <input type="text" id="search-input" placeholder="e.g. Fridge, Washing Machine..." oninput="applyFilters()">
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table id="summary-table">
+                    <thead>
+                        <tr>
+                            <th>House</th>
+                            <th>Mapped Appliance</th>
+                            <th>Active Percentage (%)</th>
+                            <th>Mean Power Active (W)</th>
+                            <th>Threshold (W)</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        <!-- Filled dynamically by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Right: Charts & Distribution Analysis -->
+        <div class="panel">
+            <div class="panel-title">Appliance Usage Distribution</div>
+            
+            <div class="chart-container-inner">
+                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);">Active Percentage (%) Comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="activePctChart"></canvas>
+                </div>
+            </div>
+            
+            <div class="chart-container-inner">
+                <div style="font-size: 0.9rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--text-muted);">Active Power draw (W) Comparison</div>
+                <div class="chart-wrapper">
+                    <canvas id="activePowerChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-footer">
+        <div class="status-left">
+            <div class="status-indicator"></div>
+            <span>Data Pipeline Status: Operational & Verified</span>
+        </div>
+        <div>Report generated on: 2026-07-01 10:58:20</div>
+    </div>
+
+    <script>
+        const rawData = [{"Appliance": "Fridge", "Active Percentage (%)": 51.3506, "Mean Power Active (W)": 119.33, "Threshold_W": 15.0, "House": 1}, {"Appliance": "Chest_Freezer", "Active Percentage (%)": 39.7534, "Mean Power Active (W)": 953.65, "Threshold_W": 15.0, "House": 1}, {"Appliance": "Upright_Freezer", "Active Percentage (%)": 45.6254, "Mean Power Active (W)": 670.35, "Threshold_W": 15.0, "House": 1}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 50.3523, "Mean Power Active (W)": 79.26, "Threshold_W": 20.0, "House": 1}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 7.2225, "Mean Power Active (W)": 1070.18, "Threshold_W": 20.0, "House": 1}, {"Appliance": "Dishwasher", "Active Percentage (%)": 4.8444, "Mean Power Active (W)": 2116.32, "Threshold_W": 20.0, "House": 1}, {"Appliance": "Computer_Site", "Active Percentage (%)": 16.2067, "Mean Power Active (W)": 14.41, "Threshold_W": 10.0, "House": 1}, {"Appliance": "Television_Site", "Active Percentage (%)": 13.0065, "Mean Power Active (W)": 36.53, "Threshold_W": 10.0, "House": 1}, {"Appliance": "Electric_Heater", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 1}, {"Appliance": "Magimix_Blender", "Active Percentage (%)": 48.9031, "Mean Power Active (W)": 119.21, "Threshold_W": 10.0, "House": 10}, {"Appliance": "Freezer", "Active Percentage (%)": 49.8172, "Mean Power Active (W)": 890.83, "Threshold_W": 15.0, "House": 10}, {"Appliance": "Chest_Freezer_In_Garage", "Active Percentage (%)": 36.6849, "Mean Power Active (W)": 552.95, "Threshold_W": 15.0, "House": 10}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 62.8275, "Mean Power Active (W)": 79.39, "Threshold_W": 15.0, "House": 10}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 10.7861, "Mean Power Active (W)": 1061.07, "Threshold_W": 20.0, "House": 10}, {"Appliance": "Dishwasher", "Active Percentage (%)": 4.7227, "Mean Power Active (W)": 2119.08, "Threshold_W": 20.0, "House": 10}, {"Appliance": "Television_Site", "Active Percentage (%)": 16.4534, "Mean Power Active (W)": 14.4, "Threshold_W": 10.0, "House": 10}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 10}, {"Appliance": "Kenwood_KMix", "Active Percentage (%)": 1.7367, "Mean Power Active (W)": 10.04, "Threshold_W": 10.0, "House": 10}, {"Appliance": "Fridge", "Active Percentage (%)": 50.2517, "Mean Power Active (W)": 119.08, "Threshold_W": 15.0, "House": 11}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 53.1833, "Mean Power Active (W)": 961.75, "Threshold_W": 15.0, "House": 11}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 38.9103, "Mean Power Active (W)": 595.22, "Threshold_W": 20.0, "House": 11}, {"Appliance": "Dishwasher", "Active Percentage (%)": 69.085, "Mean Power Active (W)": 79.48, "Threshold_W": 20.0, "House": 11}, {"Appliance": "Computer_Site", "Active Percentage (%)": 8.2322, "Mean Power Active (W)": 1083.58, "Threshold_W": 10.0, "House": 11}, {"Appliance": "Microwave", "Active Percentage (%)": 4.7083, "Mean Power Active (W)": 2151.69, "Threshold_W": 100.0, "House": 11}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 11}, {"Appliance": "Router", "Active Percentage (%)": 11.9337, "Mean Power Active (W)": 36.64, "Threshold_W": 10.0, "House": 11}, {"Appliance": "Hi_Fi", "Active Percentage (%)": 1.8359, "Mean Power Active (W)": 10.06, "Threshold_W": 10.0, "House": 11}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 45.6746, "Mean Power Active (W)": 119.23, "Threshold_W": 15.0, "House": 12}, {"Appliance": "Television_Site_Lounge", "Active Percentage (%)": 62.2675, "Mean Power Active (W)": 1005.68, "Threshold_W": 10.0, "House": 12}, {"Appliance": "Microwave", "Active Percentage (%)": 40.5669, "Mean Power Active (W)": 628.76, "Threshold_W": 100.0, "House": 12}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 12}, {"Appliance": "Toaster", "Active Percentage (%)": 6.6726, "Mean Power Active (W)": 1075.19, "Threshold_W": 100.0, "House": 12}, {"Appliance": "Television_Site_Bedroom", "Active Percentage (%)": 5.3735, "Mean Power Active (W)": 2153.55, "Threshold_W": 10.0, "House": 12}, {"Appliance": "Not_Used", "Active Percentage (%)": 16.3271, "Mean Power Active (W)": 14.4, "Threshold_W": 10.0, "House": 12}, {"Appliance": "Not_Used_1", "Active Percentage (%)": 11.3965, "Mean Power Active (W)": 37.38, "Threshold_W": 10.0, "House": 12}, {"Appliance": "Not_Used_2", "Active Percentage (%)": 1.8896, "Mean Power Active (W)": 10.08, "Threshold_W": 10.0, "House": 12}, {"Appliance": "Television_Site", "Active Percentage (%)": 49.1486, "Mean Power Active (W)": 118.79, "Threshold_W": 10.0, "House": 13}, {"Appliance": "Unknown", "Active Percentage (%)": 43.0711, "Mean Power Active (W)": 896.46, "Threshold_W": 10.0, "House": 13}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 32.6776, "Mean Power Active (W)": 615.52, "Threshold_W": 20.0, "House": 13}, {"Appliance": "Dishwasher", "Active Percentage (%)": 65.5901, "Mean Power Active (W)": 79.47, "Threshold_W": 20.0, "House": 13}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 10.5109, "Mean Power Active (W)": 1080.63, "Threshold_W": 20.0, "House": 13}, {"Appliance": "Television_Site_1", "Active Percentage (%)": 5.4022, "Mean Power Active (W)": 2148.96, "Threshold_W": 10.0, "House": 13}, {"Appliance": "Computer_Site", "Active Percentage (%)": 17.9977, "Mean Power Active (W)": 14.29, "Threshold_W": 10.0, "House": 13}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 13}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 13}, {"Appliance": "Appliance1", "Active Percentage (%)": 49.4344, "Mean Power Active (W)": 119.08, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance2", "Active Percentage (%)": 32.834, "Mean Power Active (W)": 937.78, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance3", "Active Percentage (%)": 50.5961, "Mean Power Active (W)": 647.21, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance4", "Active Percentage (%)": 64.812, "Mean Power Active (W)": 79.24, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance5", "Active Percentage (%)": 8.0404, "Mean Power Active (W)": 1075.59, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance6", "Active Percentage (%)": 9.9052, "Mean Power Active (W)": 2156.21, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance7", "Active Percentage (%)": 17.6399, "Mean Power Active (W)": 14.42, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance8", "Active Percentage (%)": 11.4338, "Mean Power Active (W)": 37.11, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Appliance9", "Active Percentage (%)": 1.3757, "Mean Power Active (W)": 10.04, "Threshold_W": 10.0, "House": 14}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 49.3613, "Mean Power Active (W)": 118.91, "Threshold_W": 15.0, "House": 15}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 42.6341, "Mean Power Active (W)": 967.99, "Threshold_W": 20.0, "House": 15}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 39.3982, "Mean Power Active (W)": 614.89, "Threshold_W": 20.0, "House": 15}, {"Appliance": "Dishwasher", "Active Percentage (%)": 57.6213, "Mean Power Active (W)": 79.62, "Threshold_W": 20.0, "House": 15}, {"Appliance": "Computer_Site", "Active Percentage (%)": 7.522, "Mean Power Active (W)": 1066.95, "Threshold_W": 10.0, "House": 15}, {"Appliance": "Television_Site", "Active Percentage (%)": 4.3145, "Mean Power Active (W)": 2210.06, "Threshold_W": 10.0, "House": 15}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 15}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 15}, {"Appliance": "Toaster", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 15}, {"Appliance": "Fridge_Freezer_1", "Active Percentage (%)": 49.329, "Mean Power Active (W)": 118.86, "Threshold_W": 15.0, "House": 16}, {"Appliance": "Fridge_Freezer_2", "Active Percentage (%)": 54.8464, "Mean Power Active (W)": 944.08, "Threshold_W": 15.0, "House": 16}, {"Appliance": "Electric_Heater_1", "Active Percentage (%)": 40.7396, "Mean Power Active (W)": 618.94, "Threshold_W": 100.0, "House": 16}, {"Appliance": "Electric_Heater_2", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 16}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 7.0683, "Mean Power Active (W)": 1059.63, "Threshold_W": 20.0, "House": 16}, {"Appliance": "Dishwasher", "Active Percentage (%)": 3.8175, "Mean Power Active (W)": 2138.25, "Threshold_W": 20.0, "House": 16}, {"Appliance": "Computer_Site", "Active Percentage (%)": 17.3874, "Mean Power Active (W)": 14.38, "Threshold_W": 10.0, "House": 16}, {"Appliance": "Television_Site", "Active Percentage (%)": 11.4823, "Mean Power Active (W)": 35.92, "Threshold_W": 10.0, "House": 16}, {"Appliance": "Dehumidifier_Heater", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 16}, {"Appliance": "Freezer_Garage", "Active Percentage (%)": 48.0535, "Mean Power Active (W)": 118.99, "Threshold_W": 15.0, "House": 17}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 42.0208, "Mean Power Active (W)": 1014.58, "Threshold_W": 15.0, "House": 17}, {"Appliance": "Tumble_Dryer_Garage", "Active Percentage (%)": 40.2377, "Mean Power Active (W)": 594.04, "Threshold_W": 20.0, "House": 17}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 67.578, "Mean Power Active (W)": 79.51, "Threshold_W": 20.0, "House": 17}, {"Appliance": "Computer_Site", "Active Percentage (%)": 6.9837, "Mean Power Active (W)": 1062.51, "Threshold_W": 10.0, "House": 17}, {"Appliance": "Television_Site", "Active Percentage (%)": 5.8544, "Mean Power Active (W)": 2132.97, "Threshold_W": 10.0, "House": 17}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 17}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 17}, {"Appliance": "Plug_Site_Bedroom", "Active Percentage (%)": 1.8722, "Mean Power Active (W)": 10.02, "Threshold_W": 10.0, "House": 17}, {"Appliance": "Fridge_garage", "Active Percentage (%)": 49.6954, "Mean Power Active (W)": 118.43, "Threshold_W": 15.0, "House": 18}, {"Appliance": "Freezer_garage", "Active Percentage (%)": 53.2057, "Mean Power Active (W)": 933.11, "Threshold_W": 15.0, "House": 18}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 43.4871, "Mean Power Active (W)": 636.6, "Threshold_W": 15.0, "House": 18}, {"Appliance": "Washer_Dryer_garage", "Active Percentage (%)": 68.0882, "Mean Power Active (W)": 79.3, "Threshold_W": 20.0, "House": 18}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 7.6298, "Mean Power Active (W)": 1063.73, "Threshold_W": 20.0, "House": 18}, {"Appliance": "Dishwasher", "Active Percentage (%)": 6.3243, "Mean Power Active (W)": 2163.64, "Threshold_W": 20.0, "House": 18}, {"Appliance": "Desktop_Computer", "Active Percentage (%)": 17.2614, "Mean Power Active (W)": 14.35, "Threshold_W": 10.0, "House": 18}, {"Appliance": "Television_Site", "Active Percentage (%)": 12.5036, "Mean Power Active (W)": 36.24, "Threshold_W": 10.0, "House": 18}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 18}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 50.5158, "Mean Power Active (W)": 118.87, "Threshold_W": 15.0, "House": 19}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 46.2075, "Mean Power Active (W)": 924.71, "Threshold_W": 20.0, "House": 19}, {"Appliance": "Television_Site", "Active Percentage (%)": 54.2172, "Mean Power Active (W)": 566.12, "Threshold_W": 10.0, "House": 19}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 19}, {"Appliance": "Kettle", "Active Percentage (%)": 8.6165, "Mean Power Active (W)": 1100.1, "Threshold_W": 1000.0, "House": 19}, {"Appliance": "Toaster", "Active Percentage (%)": 6.4017, "Mean Power Active (W)": 2177.61, "Threshold_W": 100.0, "House": 19}, {"Appliance": "Bread_maker", "Active Percentage (%)": 17.9005, "Mean Power Active (W)": 14.32, "Threshold_W": 10.0, "House": 19}, {"Appliance": "Lamp_80Watts", "Active Percentage (%)": 11.8629, "Mean Power Active (W)": 37.25, "Threshold_W": 10.0, "House": 19}, {"Appliance": "Hi_Fi", "Active Percentage (%)": 2.2148, "Mean Power Active (W)": 10.05, "Threshold_W": 10.0, "House": 19}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 49.3008, "Mean Power Active (W)": 118.79, "Threshold_W": 15.0, "House": 2}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 54.5076, "Mean Power Active (W)": 995.22, "Threshold_W": 20.0, "House": 2}, {"Appliance": "Dishwasher", "Active Percentage (%)": 33.2044, "Mean Power Active (W)": 602.79, "Threshold_W": 20.0, "House": 2}, {"Appliance": "Television", "Active Percentage (%)": 73.8173, "Mean Power Active (W)": 79.35, "Threshold_W": 10.0, "House": 2}, {"Appliance": "Microwave", "Active Percentage (%)": 8.5689, "Mean Power Active (W)": 1065.45, "Threshold_W": 100.0, "House": 2}, {"Appliance": "Toaster", "Active Percentage (%)": 3.6596, "Mean Power Active (W)": 2142.74, "Threshold_W": 100.0, "House": 2}, {"Appliance": "Hi_Fi", "Active Percentage (%)": 15.8881, "Mean Power Active (W)": 14.32, "Threshold_W": 10.0, "House": 2}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 2}, {"Appliance": "Oven_Extractor_Fan", "Active Percentage (%)": 1.5174, "Mean Power Active (W)": 10.0, "Threshold_W": 10.0, "House": 2}, {"Appliance": "Fridge", "Active Percentage (%)": 46.9887, "Mean Power Active (W)": 118.82, "Threshold_W": 15.0, "House": 20}, {"Appliance": "Freezer", "Active Percentage (%)": 40.1513, "Mean Power Active (W)": 888.79, "Threshold_W": 15.0, "House": 20}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 24.7018, "Mean Power Active (W)": 609.21, "Threshold_W": 20.0, "House": 20}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 59.645, "Mean Power Active (W)": 79.47, "Threshold_W": 20.0, "House": 20}, {"Appliance": "Dishwasher", "Active Percentage (%)": 9.1941, "Mean Power Active (W)": 1058.05, "Threshold_W": 20.0, "House": 20}, {"Appliance": "Computer_Site", "Active Percentage (%)": 4.2188, "Mean Power Active (W)": 2175.39, "Threshold_W": 10.0, "House": 20}, {"Appliance": "Television_Site", "Active Percentage (%)": 16.9916, "Mean Power Active (W)": 14.35, "Threshold_W": 10.0, "House": 20}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 20}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 20}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 48.4857, "Mean Power Active (W)": 119.01, "Threshold_W": 15.0, "House": 21}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 55.7483, "Mean Power Active (W)": 883.75, "Threshold_W": 20.0, "House": 21}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 33.2843, "Mean Power Active (W)": 629.88, "Threshold_W": 20.0, "House": 21}, {"Appliance": "Dishwasher", "Active Percentage (%)": 59.5413, "Mean Power Active (W)": 79.41, "Threshold_W": 20.0, "House": 21}, {"Appliance": "Food_Mixer", "Active Percentage (%)": 8.4975, "Mean Power Active (W)": 1074.31, "Threshold_W": 10.0, "House": 21}, {"Appliance": "Television", "Active Percentage (%)": 5.6454, "Mean Power Active (W)": 2116.94, "Threshold_W": 10.0, "House": 21}, {"Appliance": "Kettle_Toaster", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 21}, {"Appliance": "Vivarium", "Active Percentage (%)": 12.1729, "Mean Power Active (W)": 37.19, "Threshold_W": 10.0, "House": 21}, {"Appliance": "Pond_Pump", "Active Percentage (%)": 1.8818, "Mean Power Active (W)": 10.09, "Threshold_W": 10.0, "House": 21}, {"Appliance": "Toaster", "Active Percentage (%)": 50.7918, "Mean Power Active (W)": 119.33, "Threshold_W": 100.0, "House": 3}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 53.3911, "Mean Power Active (W)": 1007.32, "Threshold_W": 15.0, "House": 3}, {"Appliance": "Freezer", "Active Percentage (%)": 43.8004, "Mean Power Active (W)": 612.79, "Threshold_W": 15.0, "House": 3}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 61.0696, "Mean Power Active (W)": 79.39, "Threshold_W": 20.0, "House": 3}, {"Appliance": "Dishwasher", "Active Percentage (%)": 7.7084, "Mean Power Active (W)": 1031.35, "Threshold_W": 20.0, "House": 3}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 7.0212, "Mean Power Active (W)": 2134.67, "Threshold_W": 20.0, "House": 3}, {"Appliance": "Television", "Active Percentage (%)": 16.343, "Mean Power Active (W)": 14.43, "Threshold_W": 10.0, "House": 3}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 3}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 3}, {"Appliance": "Fridge", "Active Percentage (%)": 49.6227, "Mean Power Active (W)": 118.57, "Threshold_W": 15.0, "House": 4}, {"Appliance": "Freezer", "Active Percentage (%)": 37.549, "Mean Power Active (W)": 904.34, "Threshold_W": 15.0, "House": 4}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 38.0018, "Mean Power Active (W)": 571.54, "Threshold_W": 15.0, "House": 4}, {"Appliance": "Washing_Machine_1", "Active Percentage (%)": 56.4745, "Mean Power Active (W)": 79.32, "Threshold_W": 20.0, "House": 4}, {"Appliance": "Washing_Machine_2", "Active Percentage (%)": 8.8138, "Mean Power Active (W)": 1079.05, "Threshold_W": 20.0, "House": 4}, {"Appliance": "Computer_Site", "Active Percentage (%)": 4.0447, "Mean Power Active (W)": 2177.05, "Threshold_W": 10.0, "House": 4}, {"Appliance": "Television_Site", "Active Percentage (%)": 16.0881, "Mean Power Active (W)": 14.27, "Threshold_W": 10.0, "House": 4}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 4}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 4}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 50.2374, "Mean Power Active (W)": 119.04, "Threshold_W": 15.0, "House": 5}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 45.0742, "Mean Power Active (W)": 916.8, "Threshold_W": 20.0, "House": 5}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 44.5401, "Mean Power Active (W)": 651.55, "Threshold_W": 20.0, "House": 5}, {"Appliance": "Dishwasher", "Active Percentage (%)": 66.7953, "Mean Power Active (W)": 79.41, "Threshold_W": 20.0, "House": 5}, {"Appliance": "Computer_Site", "Active Percentage (%)": 10.6825, "Mean Power Active (W)": 1071.96, "Threshold_W": 10.0, "House": 5}, {"Appliance": "Television_Site", "Active Percentage (%)": 4.0356, "Mean Power Active (W)": 2123.14, "Threshold_W": 10.0, "House": 5}, {"Appliance": "Combination_Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 5}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 5}, {"Appliance": "Toaster", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 5}, {"Appliance": "Freezer_Utility_Room", "Active Percentage (%)": 46.6002, "Mean Power Active (W)": 118.86, "Threshold_W": 15.0, "House": 6}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 62.7984, "Mean Power Active (W)": 910.83, "Threshold_W": 20.0, "House": 6}, {"Appliance": "Dishwasher", "Active Percentage (%)": 49.7733, "Mean Power Active (W)": 674.65, "Threshold_W": 20.0, "House": 6}, {"Appliance": "MJY_Computer", "Active Percentage (%)": 57.3587, "Mean Power Active (W)": 79.53, "Threshold_W": 10.0, "House": 6}, {"Appliance": "Television_Site", "Active Percentage (%)": 10.5168, "Mean Power Active (W)": 1075.1, "Threshold_W": 10.0, "House": 6}, {"Appliance": "Microwave", "Active Percentage (%)": 3.294, "Mean Power Active (W)": 2156.23, "Threshold_W": 100.0, "House": 6}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 6}, {"Appliance": "Toaster", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 6}, {"Appliance": "PGM_Computer", "Active Percentage (%)": 1.9341, "Mean Power Active (W)": 10.02, "Threshold_W": 10.0, "House": 6}, {"Appliance": "Fridge", "Active Percentage (%)": 49.1275, "Mean Power Active (W)": 118.94, "Threshold_W": 15.0, "House": 7}, {"Appliance": "Freezer_Garage", "Active Percentage (%)": 34.8122, "Mean Power Active (W)": 843.74, "Threshold_W": 15.0, "House": 7}, {"Appliance": "Freezer", "Active Percentage (%)": 48.2993, "Mean Power Active (W)": 653.98, "Threshold_W": 15.0, "House": 7}, {"Appliance": "Tumble_Dryer", "Active Percentage (%)": 62.7921, "Mean Power Active (W)": 79.4, "Threshold_W": 20.0, "House": 7}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 7.3943, "Mean Power Active (W)": 1084.55, "Threshold_W": 20.0, "House": 7}, {"Appliance": "Dishwasher", "Active Percentage (%)": 5.9154, "Mean Power Active (W)": 2140.38, "Threshold_W": 20.0, "House": 7}, {"Appliance": "Television_Site", "Active Percentage (%)": 17.5983, "Mean Power Active (W)": 14.25, "Threshold_W": 10.0, "House": 7}, {"Appliance": "Toaster", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 7}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 7}, {"Appliance": "Fridge", "Active Percentage (%)": 49.3579, "Mean Power Active (W)": 119.18, "Threshold_W": 15.0, "House": 8}, {"Appliance": "Freezer", "Active Percentage (%)": 50.4086, "Mean Power Active (W)": 923.15, "Threshold_W": 15.0, "House": 8}, {"Appliance": "Dryer", "Active Percentage (%)": 44.1915, "Mean Power Active (W)": 552.42, "Threshold_W": 20.0, "House": 8}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 55.9545, "Mean Power Active (W)": 79.16, "Threshold_W": 20.0, "House": 8}, {"Appliance": "Toaster", "Active Percentage (%)": 8.2604, "Mean Power Active (W)": 1062.01, "Threshold_W": 100.0, "House": 8}, {"Appliance": "Computer", "Active Percentage (%)": 5.575, "Mean Power Active (W)": 2139.95, "Threshold_W": 10.0, "House": 8}, {"Appliance": "Television_Site", "Active Percentage (%)": 17.4548, "Mean Power Active (W)": 14.42, "Threshold_W": 10.0, "House": 8}, {"Appliance": "Microwave", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 8}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 8}, {"Appliance": "Fridge_Freezer", "Active Percentage (%)": 50.5841, "Mean Power Active (W)": 118.75, "Threshold_W": 15.0, "House": 9}, {"Appliance": "Washer_Dryer", "Active Percentage (%)": 42.4065, "Mean Power Active (W)": 871.8, "Threshold_W": 20.0, "House": 9}, {"Appliance": "Washing_Machine", "Active Percentage (%)": 34.0537, "Mean Power Active (W)": 619.07, "Threshold_W": 20.0, "House": 9}, {"Appliance": "Dishwasher", "Active Percentage (%)": 59.7839, "Mean Power Active (W)": 79.25, "Threshold_W": 20.0, "House": 9}, {"Appliance": "Television_Site", "Active Percentage (%)": 7.243, "Mean Power Active (W)": 1078.4, "Threshold_W": 10.0, "House": 9}, {"Appliance": "Microwave", "Active Percentage (%)": 4.2932, "Mean Power Active (W)": 2172.39, "Threshold_W": 100.0, "House": 9}, {"Appliance": "Kettle", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 1000.0, "House": 9}, {"Appliance": "Hi_Fi", "Active Percentage (%)": 12.354, "Mean Power Active (W)": 36.61, "Threshold_W": 10.0, "House": 9}, {"Appliance": "Electric_Heater", "Active Percentage (%)": 0.0, "Mean Power Active (W)": 0.0, "Threshold_W": 100.0, "House": 9}];
+        
+        // Populate house select options
+        const houses = [...new Set(rawData.map(r => r.House))].sort((a,b) => a - b);
+        const houseSelect = document.getElementById("house-select");
+        houses.forEach(h => {
+            const opt = document.createElement("option");
+            opt.value = h;
+            opt.textContent = "House " + h;
+            houseSelect.appendChild(opt);
+        });
+
+        let activeChart = null;
+        let powerChart = null;
+
+        function renderTable(data) {
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = "";
+            
+            data.forEach(row => {
+                const tr = document.createElement("tr");
+                
+                // House ID badge
+                const tdHouse = document.createElement("td");
+                tdHouse.innerHTML = `<span class="badge badge-house">House ${row.House}</span>`;
+                tr.appendChild(tdHouse);
+                
+                // Mapped appliance name
+                const tdApp = document.createElement("td");
+                tdApp.textContent = row.Appliance;
+                tdApp.style.fontWeight = "500";
+                tr.appendChild(tdApp);
+                
+                // Active percentage progress bar
+                const tdActive = document.createElement("td");
+                const roundedPct = parseFloat(row["Active Percentage (%)"]).toFixed(2);
+                tdActive.innerHTML = `
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${roundedPct}%"></div>
+                        </div>
+                        <span class="progress-val">${roundedPct}%</span>
+                    </div>
+                `;
+                tr.appendChild(tdActive);
+                
+                // Mean active power
+                const tdPower = document.createElement("td");
+                tdPower.textContent = parseFloat(row["Mean Power Active (W)"]).toFixed(1) + " W";
+                tdPower.style.fontFamily = "'Outfit', monospace";
+                tr.appendChild(tdPower);
+                
+                // Threshold badge
+                const tdThreshold = document.createElement("td");
+                tdThreshold.innerHTML = `<span class="badge badge-threshold">${row.Threshold_W} W</span>`;
+                tr.appendChild(tdThreshold);
+                
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById("row-count").textContent = `Showing ${data.length} items`;
+        }
+
+        function renderCharts(data) {
+            // Destroy existing charts to avoid overlay
+            if (activeChart) activeChart.destroy();
+            if (powerChart) powerChart.destroy();
+
+            // Aggregating top 10 values for visual clarity if list is long
+            const sortedData = [...data].sort((a, b) => b["Active Percentage (%)"] - a["Active Percentage (%)"]).slice(0, 10);
+            
+            const labels = sortedData.map(r => `H${r.House}: ${r.Appliance}`);
+            const activePcts = sortedData.map(r => r["Active Percentage (%)"]);
+            const activePowers = sortedData.map(r => r["Mean Power Active (W)"]);
+
+            const ctx1 = document.getElementById('activePctChart').getContext('2d');
+            activeChart = new Chart(ctx1, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Active Percentage (%)',
+                        data: activePcts,
+                        backgroundColor: '#58a6ff',
+                        borderColor: '#1f6feb',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { padding: 10 }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#232c45' },
+                            ticks: { color: '#8b949e', font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8b949e', font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+
+            const ctx2 = document.getElementById('activePowerChart').getContext('2d');
+            powerChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Mean Power Active (W)',
+                        data: activePowers,
+                        backgroundColor: '#d2a8ff',
+                        borderColor: '#8e2de2',
+                        borderWidth: 1,
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: { padding: 10 }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: '#232c45' },
+                            ticks: { color: '#8b949e', font: { family: 'Inter' } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#8b949e', font: { family: 'Inter', size: 10 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        function applyFilters() {
+            const houseVal = document.getElementById("house-select").value;
+            const searchVal = document.getElementById("search-input").value.toLowerCase();
+
+            let filtered = rawData;
+            
+            if (houseVal !== "all") {
+                filtered = filtered.filter(r => r.House.toString() === houseVal);
+            }
+
+            if (searchVal) {
+                filtered = filtered.filter(r => r.Appliance.toLowerCase().includes(searchVal));
+            }
+
+            renderTable(filtered);
+            renderCharts(filtered);
+        }
+
+        // Initial load
+        window.addEventListener("DOMContentLoaded", () => {
+            applyFilters();
+        });
+    </script>
+</body>
+</html>

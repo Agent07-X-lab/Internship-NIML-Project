@@ -1,0 +1,88 @@
+{
+    "10": {
+        "LSTM Autoencoder": {
+            "Before_Fault": {
+                "Accuracy": 0.0,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0
+            },
+            "After_Fault": {
+                "Accuracy": 1.0,
+                "Precision": 1.0,
+                "Recall": 1.0,
+                "F1": 1.0
+            }
+        },
+        "GCN Autoencoder": {
+            "Before_Fault": {
+                "Accuracy": 0.4,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0
+            },
+            "After_Fault": {
+                "Accuracy": 0.6,
+                "Precision": 1.0,
+                "Recall": 0.6,
+                "F1": 0.7499999999999999
+            }
+        },
+        "GTAE": {
+            "Before_Fault": {
+                "Accuracy": 0.4,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0
+            },
+            "After_Fault": {
+                "Accuracy": 0.6,
+                "Precision": 1.0,
+                "Recall": 0.6,
+                "F1": 0.7499999999999999
+            }
+        },
+        "HGNN-AE": {
+            "Before_Fault": {
+                "Accuracy": 0.0,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0
+            },
+            "After_Fault": {
+                "Accuracy": 1.0,
+                "Precision": 1.0,
+                "Recall": 1.0,
+                "F1": 1.0
+            }
+        },
+        "HG-GTAE": {
+            "Before_Fault": {
+                "Accuracy": 0.2,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0
+            },
+            "After_Fault": {
+                "Accuracy": 0.8,
+                "Precision": 1.0,
+                "Recall": 0.8,
+                "F1": 0.8888888888888888
+            }
+        },
+        "HG-LG-GTAE (Proposed)": {
+            "Before_Fault": {
+                "Accuracy": 0.2,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0
+            },
+            "After_Fault": {
+                "Accuracy": 0.8,
+                "Precision": 1.0,
+                "Recall": 0.8,
+                "F1": 0.8888888888888888
+            }
+        }
+    }
+}

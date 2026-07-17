@@ -1,0 +1,566 @@
+{
+    "LSTM Autoencoder": {
+        "19": {
+            "Bread_maker": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.2,
+                "F1": 0.28571428571428575,
+                "TP": 2,
+                "TN": 12,
+                "FP": 2,
+                "FN": 8
+            },
+            "Fridge_Freezer": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.2,
+                "F1": 0.28571428571428575,
+                "TP": 2,
+                "TN": 12,
+                "FP": 2,
+                "FN": 8
+            },
+            "Hi_Fi": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.2,
+                "F1": 0.28571428571428575,
+                "TP": 2,
+                "TN": 12,
+                "FP": 2,
+                "FN": 8
+            },
+            "Kettle": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.2,
+                "F1": 0.28571428571428575,
+                "TP": 2,
+                "TN": 12,
+                "FP": 2,
+                "FN": 8
+            },
+            "Lamp_80Watts": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.2,
+                "F1": 0.28571428571428575,
+                "TP": 2,
+                "TN": 12,
+                "FP": 2,
+                "FN": 8
+            },
+            "Microwave": {
+                "Accuracy": 0.5,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 12,
+                "FP": 2,
+                "FN": 10
+            },
+            "Television_Site": {
+                "Accuracy": 0.5,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 12,
+                "FP": 2,
+                "FN": 10
+            },
+            "Toaster": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.2,
+                "F1": 0.28571428571428575,
+                "TP": 2,
+                "TN": 12,
+                "FP": 2,
+                "FN": 8
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.5,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 12,
+                "FP": 2,
+                "FN": 10
+            }
+        }
+    },
+    "GCN Autoencoder": {
+        "19": {
+            "Bread_maker": {
+                "Accuracy": 0.7916666666666666,
+                "Precision": 1.0,
+                "Recall": 0.5,
+                "F1": 0.6666666666666666,
+                "TP": 5,
+                "TN": 14,
+                "FP": 0,
+                "FN": 5
+            },
+            "Fridge_Freezer": {
+                "Accuracy": 0.625,
+                "Precision": 1.0,
+                "Recall": 0.1,
+                "F1": 0.18181818181818182,
+                "TP": 1,
+                "TN": 14,
+                "FP": 0,
+                "FN": 9
+            },
+            "Hi_Fi": {
+                "Accuracy": 0.7916666666666666,
+                "Precision": 1.0,
+                "Recall": 0.5,
+                "F1": 0.6666666666666666,
+                "TP": 5,
+                "TN": 14,
+                "FP": 0,
+                "FN": 5
+            },
+            "Kettle": {
+                "Accuracy": 0.75,
+                "Precision": 1.0,
+                "Recall": 0.4,
+                "F1": 0.5714285714285715,
+                "TP": 4,
+                "TN": 14,
+                "FP": 0,
+                "FN": 6
+            },
+            "Lamp_80Watts": {
+                "Accuracy": 0.7916666666666666,
+                "Precision": 1.0,
+                "Recall": 0.5,
+                "F1": 0.6666666666666666,
+                "TP": 5,
+                "TN": 14,
+                "FP": 0,
+                "FN": 5
+            },
+            "Microwave": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            },
+            "Television_Site": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            },
+            "Toaster": {
+                "Accuracy": 0.7916666666666666,
+                "Precision": 1.0,
+                "Recall": 0.5,
+                "F1": 0.6666666666666666,
+                "TP": 5,
+                "TN": 14,
+                "FP": 0,
+                "FN": 5
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            }
+        }
+    },
+    "GTAE": {
+        "19": {
+            "Bread_maker": {
+                "Accuracy": 0.75,
+                "Precision": 1.0,
+                "Recall": 0.4,
+                "F1": 0.5714285714285715,
+                "TP": 4,
+                "TN": 14,
+                "FP": 0,
+                "FN": 6
+            },
+            "Fridge_Freezer": {
+                "Accuracy": 0.625,
+                "Precision": 1.0,
+                "Recall": 0.1,
+                "F1": 0.18181818181818182,
+                "TP": 1,
+                "TN": 14,
+                "FP": 0,
+                "FN": 9
+            },
+            "Hi_Fi": {
+                "Accuracy": 0.7916666666666666,
+                "Precision": 1.0,
+                "Recall": 0.5,
+                "F1": 0.6666666666666666,
+                "TP": 5,
+                "TN": 14,
+                "FP": 0,
+                "FN": 5
+            },
+            "Kettle": {
+                "Accuracy": 0.75,
+                "Precision": 1.0,
+                "Recall": 0.4,
+                "F1": 0.5714285714285715,
+                "TP": 4,
+                "TN": 14,
+                "FP": 0,
+                "FN": 6
+            },
+            "Lamp_80Watts": {
+                "Accuracy": 0.75,
+                "Precision": 1.0,
+                "Recall": 0.4,
+                "F1": 0.5714285714285715,
+                "TP": 4,
+                "TN": 14,
+                "FP": 0,
+                "FN": 6
+            },
+            "Microwave": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            },
+            "Television_Site": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            },
+            "Toaster": {
+                "Accuracy": 0.7916666666666666,
+                "Precision": 1.0,
+                "Recall": 0.5,
+                "F1": 0.6666666666666666,
+                "TP": 5,
+                "TN": 14,
+                "FP": 0,
+                "FN": 5
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            }
+        }
+    },
+    "HGNN-AE": {
+        "19": {
+            "Bread_maker": {
+                "Accuracy": 0.7083333333333334,
+                "Precision": 0.8,
+                "Recall": 0.4,
+                "F1": 0.5333333333333333,
+                "TP": 4,
+                "TN": 13,
+                "FP": 1,
+                "FN": 6
+            },
+            "Fridge_Freezer": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.1,
+                "F1": 0.16666666666666669,
+                "TP": 1,
+                "TN": 13,
+                "FP": 1,
+                "FN": 9
+            },
+            "Hi_Fi": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Kettle": {
+                "Accuracy": 0.7083333333333334,
+                "Precision": 0.8,
+                "Recall": 0.4,
+                "F1": 0.5333333333333333,
+                "TP": 4,
+                "TN": 13,
+                "FP": 1,
+                "FN": 6
+            },
+            "Lamp_80Watts": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Microwave": {
+                "Accuracy": 0.5416666666666666,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 13,
+                "FP": 1,
+                "FN": 10
+            },
+            "Television_Site": {
+                "Accuracy": 0.5416666666666666,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 13,
+                "FP": 1,
+                "FN": 10
+            },
+            "Toaster": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.5416666666666666,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 13,
+                "FP": 1,
+                "FN": 10
+            }
+        }
+    },
+    "HG-GTAE": {
+        "19": {
+            "Bread_maker": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Fridge_Freezer": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.5,
+                "Recall": 0.1,
+                "F1": 0.16666666666666669,
+                "TP": 1,
+                "TN": 13,
+                "FP": 1,
+                "FN": 9
+            },
+            "Hi_Fi": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Kettle": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Lamp_80Watts": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Microwave": {
+                "Accuracy": 0.5416666666666666,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 13,
+                "FP": 1,
+                "FN": 10
+            },
+            "Television_Site": {
+                "Accuracy": 0.5416666666666666,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 13,
+                "FP": 1,
+                "FN": 10
+            },
+            "Toaster": {
+                "Accuracy": 0.75,
+                "Precision": 0.8333333333333334,
+                "Recall": 0.5,
+                "F1": 0.625,
+                "TP": 5,
+                "TN": 13,
+                "FP": 1,
+                "FN": 5
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.5416666666666666,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 13,
+                "FP": 1,
+                "FN": 10
+            }
+        }
+    },
+    "HG-LG-GTAE (Proposed)": {
+        "19": {
+            "Bread_maker": {
+                "Accuracy": 0.6666666666666666,
+                "Precision": 1.0,
+                "Recall": 0.2,
+                "F1": 0.33333333333333337,
+                "TP": 2,
+                "TN": 14,
+                "FP": 0,
+                "FN": 8
+            },
+            "Fridge_Freezer": {
+                "Accuracy": 0.625,
+                "Precision": 1.0,
+                "Recall": 0.1,
+                "F1": 0.18181818181818182,
+                "TP": 1,
+                "TN": 14,
+                "FP": 0,
+                "FN": 9
+            },
+            "Hi_Fi": {
+                "Accuracy": 0.7083333333333334,
+                "Precision": 1.0,
+                "Recall": 0.3,
+                "F1": 0.4615384615384615,
+                "TP": 3,
+                "TN": 14,
+                "FP": 0,
+                "FN": 7
+            },
+            "Kettle": {
+                "Accuracy": 0.7083333333333334,
+                "Precision": 1.0,
+                "Recall": 0.3,
+                "F1": 0.4615384615384615,
+                "TP": 3,
+                "TN": 14,
+                "FP": 0,
+                "FN": 7
+            },
+            "Lamp_80Watts": {
+                "Accuracy": 0.6666666666666666,
+                "Precision": 1.0,
+                "Recall": 0.2,
+                "F1": 0.33333333333333337,
+                "TP": 2,
+                "TN": 14,
+                "FP": 0,
+                "FN": 8
+            },
+            "Microwave": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            },
+            "Television_Site": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            },
+            "Toaster": {
+                "Accuracy": 0.6666666666666666,
+                "Precision": 1.0,
+                "Recall": 0.2,
+                "F1": 0.33333333333333337,
+                "TP": 2,
+                "TN": 14,
+                "FP": 0,
+                "FN": 8
+            },
+            "Washing_Machine": {
+                "Accuracy": 0.5833333333333334,
+                "Precision": 0.0,
+                "Recall": 0.0,
+                "F1": 0.0,
+                "TP": 0,
+                "TN": 14,
+                "FP": 0,
+                "FN": 10
+            }
+        }
+    }
+}

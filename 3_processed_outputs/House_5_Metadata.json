@@ -1,0 +1,31 @@
+{
+    "House": 5,
+    "SourceFile": "CLEAN_House5.csv",
+    "TotalRawRows": 3000,
+    "ProcessedRows": 3370,
+    "StartTime": "2014-04-01 00:00:00",
+    "EndTime": "2014-04-01 07:29:12",
+    "SamplingFrequency": "8s",
+    "Mappings": {
+        "Appliance1": "Fridge-Freezer",
+        "Appliance2": "Tumble Dryer",
+        "Appliance3": "Washing Machine",
+        "Appliance4": "Dishwasher",
+        "Appliance5": "Computer Site",
+        "Appliance6": "Television Site",
+        "Appliance7": "Combination Microwave",
+        "Appliance8": "Kettle",
+        "Appliance9": "Toaster"
+    },
+    "Thresholds": {
+        "Fridge_Freezer": 15.0,
+        "Tumble_Dryer": 20.0,
+        "Washing_Machine": 20.0,
+        "Dishwasher": 20.0,
+        "Computer_Site": 10.0,
+        "Television_Site": 10.0,
+        "Combination_Microwave": 100.0,
+        "Kettle": 1000.0,
+        "Toaster": 100.0
+    }
+}

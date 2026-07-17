@@ -1,0 +1,31 @@
+{
+    "drift_thresholds": {
+        "healthy_limit": 1.15,
+        "minor_limit": 1.30,
+        "moderate_limit": 1.60
+    },
+    "health_failure_threshold": 50.0,
+    "rul_fit_points": 5,
+    "default_confidences": {
+        "GTAE": 0.95,
+        "GAT": 0.92,
+        "GCN": 0.88,
+        "LSTM": 0.85,
+        "GRU": 0.84,
+        "CNN": 0.78
+    },
+    "degradation_rates": {
+        "refrigerator": 0.015,
+        "fridge": 0.015,
+        "freezer": 0.015,
+        "washing_machine": 0.012,
+        "washer": 0.012,
+        "dryer": 0.012,
+        "dishwasher": 0.010,
+        "air_conditioner": 0.018,
+        "fan": 0.008,
+        "microwave": 0.005,
+        "tv": 0.005,
+        "kettle": 0.005
+    }
+}
